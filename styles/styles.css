@@ -3,18 +3,19 @@ body {
 }
 
 .topbar {
-    height: 60px;
-    background: red;
+    height: 10vh;
+    /* background: red; */
+    display: flex;
+    flex-direction: column;
 }
 
 .mid {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 90vh;
 }
-
 .tabs {
-    height: 24px;
+    height: 30px;
     background: #f88;
 }
 
@@ -24,20 +25,14 @@ body {
     height: calc(100vh - 60px);
 }
 
-.canvas {
-    flex: 1;
-    border: 1px solid;
-}
 
 .tools-right {
-    border: 1px solid;
+    /* border: 1px solid; */
     width: 200px;
 }
 
-.colors {
-    /* Estilos de la paleta de colores */
-}
-
-.layers {
-    /* Estilos del menú de capas */
+.colors , .layers{
+    height: 50%;
+    display: grid;
+    place-items: center;
 }

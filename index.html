@@ -9,14 +9,24 @@
 
 <body>
     <div class="topbar">
-        Topbar
-    </div>
-
-    <div class="mid">
+        <div class="tools">
+            <button onclick="setTool('pen')">Pincel</button>
+        <button onclick="setTool('line')">Línea</button>
+        <button onclick="setTool('rectangle')">Rectángulo</button>
+        <button onclick="setTool('circle')">Círculo</button>
+        <label for="thickness">Grosor:</label>
+        <input type="range" id="thickness" min="1" max="20" value="1" onchange="setThickness(this.value)">
+        <button onclick="clearCanvas()">Limpiar</button>
+        <button onclick="saveCanvas()">Guardar</button>
+        <button onclick="loadCanvas()">Cargar</button>
+        </div>
         <div class="tabs">
             Tabs
         </div>
+    </div>
 
+
+    <div class="mid">
         <div class="content">
             <canvas id="paintCanvas" class="canvas">
                 
@@ -24,8 +34,15 @@
 
             <div class="tools-right">
                 <div class="colors">
-                    Paleta de colores
+                    <div>
+                        <label for="strokeColor">Borde:</label>
+                    <input type="color" id="strokeColor" onchange="setStrokeColor(this.value)" value="#000000">
+                <br>
+                    <label for="fillColor">Relleno:</label>
+                    <input type="color" id="fillColor" onchange="setFillColor(this.value)" value="#000000">
+                    </div>
                 </div>
+                
                 <div class="layers">
                     Menú de capas
                 </div>
