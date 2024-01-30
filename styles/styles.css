@@ -1,0 +1,43 @@
+body {
+    margin: 0;
+}
+
+.topbar {
+    height: 60px;
+    background: red;
+}
+
+.mid {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.tabs {
+    height: 24px;
+    background: #f88;
+}
+
+.content {
+    display: flex;
+    flex-direction: row;
+    height: calc(100vh - 60px);
+}
+
+.canvas {
+    flex: 1;
+    border: 1px solid;
+}
+
+.tools-right {
+    border: 1px solid;
+    width: 200px;
+}
+
+.colors {
+    /* Estilos de la paleta de colores */
+}
+
+.layers {
+    /* Estilos del menú de capas */
+}
