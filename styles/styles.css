@@ -22,10 +22,12 @@ body {
 .content {
     display: flex;
     flex-direction: row;
-    height: calc(100vh - 60px);
+    /* height: calc(90vh - 60px); */
 }
 
-
+.canvas{
+    border: 3px solid #000;
+}
 .tools-right {
     /* border: 1px solid; */
     width: 200px;

@@ -6,16 +6,15 @@ const context = canvas.getContext('2d');
 let isDrawing = false;
 let startX = 0;
 let startY = 0;
+let endX = 0; // Se agregó endX y endY
+let endY = 0;
 let tool = 'pen'; // Puede ser 'pen', 'line', 'rectangle', 'circle'
 let thickness = 1;
 let shapes = []; // Array para almacenar todas las formas dibujadas
-// ...
 
 // Variables para el dibujo
 let strokeColor = document.querySelector('#strokeColor').value;
 let fillColor = document.querySelector('#fillColor').value;
-
-// ...
 
 // Función para cambiar el color del borde
 function setStrokeColor(newColor) {
@@ -28,8 +27,6 @@ function setFillColor(newColor) {
     fillColor = newColor;
     context.fillStyle = newColor;
 }
-
-// ...
 
 // Configurar el ancho de línea
 context.lineWidth = thickness;
@@ -52,7 +49,6 @@ const drawArea = {
 
 // Función para empezar a dibujar
 function startDrawing(e) {
-    console.log('Dibujando');
     isDrawing = true;
 
     // Obtener la posición del canvas en relación con la ventana
@@ -61,19 +57,22 @@ function startDrawing(e) {
     // Ajustar las coordenadas del mouse en relación con el canvas
     startX = e.clientX - canvasRect.left;
     startY = e.clientY - canvasRect.top;
-}
 
+    // Inicializar endX y endY
+    endX = startX;
+    endY = startY;
+}
 
 // Función para dibujar formas
 function drawShape(e) {
     if (!isDrawing) return;
 
-    const endX = e.clientX - canvas.offsetLeft;
-    const endY = e.clientY - canvas.offsetTop;
-    // Limpiar el canvas
-    // context.clearRect(0, 0, canvas.width, canvas.height);
+    const canvasRect = canvas.getBoundingClientRect();
+    endX = e.clientX - canvasRect.left;
+    endY = e.clientY - canvasRect.top;
 
-    // Dibujar todas las formas almacenadas
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
     for (const shape of shapes) {
         switch (shape.tool) {
             case 'pen':
@@ -84,7 +83,6 @@ function drawShape(e) {
                 break;
             case 'line':
                 context.beginPath();
-                context.fillStyle=
                 context.moveTo(shape.startX, shape.startY);
                 context.lineTo(shape.endX, shape.endY);
                 context.stroke();
@@ -103,26 +101,27 @@ function drawShape(e) {
         }
     }
 
-    // Dibujar la nueva forma
     switch (tool) {
         case 'pen':
-            context.strokeStyle=strokeColor
-            context.fillStyle=fillColor
+            context.strokeStyle = strokeColor;
             context.beginPath();
             context.moveTo(startX, startY);
             context.lineTo(endX, endY);
             context.stroke();
             break;
         case 'line':
+            context.strokeStyle = strokeColor;
             context.beginPath();
             context.moveTo(startX, startY);
             context.lineTo(endX, endY);
             context.stroke();
             break;
         case 'rectangle':
+            context.fillStyle = fillColor;
             context.fillRect(startX, startY, endX - startX, endY - startY);
             break;
         case 'circle':
+            context.fillStyle = fillColor;
             const radius = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
             context.beginPath();
             context.arc(startX, startY, radius, 0, 2 * Math.PI);
@@ -135,10 +134,12 @@ function drawShape(e) {
 
 // Función para dejar de dibujar
 function stopDrawing() {
-    isDrawing = false;
-    // Almacenar la nueva forma en el array
-    shapes.push({ tool, startX, startY, endX: startX, endY: startY });
-    // drawShape(e)
+    if (isDrawing) {
+        isDrawing = false;
+        // Almacenar la nueva forma en el array
+        shapes.push({ tool, startX, startY, endX, endY });
+        drawShapes();
+    }
 }
 
 // Función para cambiar la herramienta de dibujo
@@ -154,12 +155,10 @@ function setThickness(newThickness) {
 
 // Función para limpiar el canvas
 function clearCanvas() {
-    // context.clearRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = "#ffffff"
+    context.fillStyle = "#ffffff";
     context.fillRect(0, 0, canvas.width, canvas.height);
-    // Limpiar el array de formas
     shapes = [];
-    context.fillStyle = fillColor
+    context.fillStyle = fillColor;
 }
 
 // Función para guardar el estado del canvas en el almacenamiento local
@@ -185,7 +184,38 @@ function loadCanvas() {
 
     if (savedShapesData) {
         shapes = JSON.parse(savedShapesData);
-        drawShape(); // Dibujar las formas almacenadas
+        drawShapes();
+    }
+}
+
+// Nueva función para dibujar todas las formas almacenadas
+function drawShapes() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (const shape of shapes) {
+        switch (shape.tool) {
+            case 'pen':
+                
+            case 'line':
+                context.beginPath();
+                context.moveTo(shape.startX, shape.startY);
+                context.lineTo(shape.endX, shape.endY);
+                context.stroke();
+                break;
+            case 'rectangle':
+                context.fillStyle = fillColor;
+                context.fillRect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
+                break;
+            case 'circle':
+                context.fillStyle = fillColor;
+                const radius = Math.sqrt(Math.pow(shape.endX - shape.startX, 2) + Math.pow(shape.endY - shape.startY, 2));
+                context.beginPath();
+                context.arc(shape.startX, shape.startY, radius, 0, 2 * Math.PI);
+                context.fill();
+                break;
+            default:
+                break;
+        }
     }
 }
 
