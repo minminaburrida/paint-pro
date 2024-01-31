@@ -78,11 +78,12 @@ function drawShape(e) {
     for (const shape of shapes) {
         switch (shape.tool) {
             case 'pen':
-                context.beginPath();
-                context.moveTo(shape.startX, shape.startY);
-                context.lineTo(shape.endX, shape.endY);
-                context.stroke();
-                break;
+
+            //     context.beginPath();
+            //     context.moveTo(shape.startX, shape.startY);
+            //     context.lineTo(shape.endX, shape.endY);
+            //     context.stroke();
+            //     break;
             case 'line':
                 context.beginPath();
                 context.moveTo(shape.startX, shape.startY);
@@ -205,7 +206,7 @@ function drawShapes() {
             case 'line':
                 context.beginPath();
                 context.moveTo(shape.startX, shape.startY);
-                context.lineTo(shape.endX, shape.endY);a
+                context.lineTo(shape.endX, shape.endY);
                 context.stroke();
                 break;
             case 'rectangle':
@@ -222,13 +223,31 @@ function drawShapes() {
         }
     }
 }
+function drawPen(e) {
+    if (!isDrawing || tool != 'pen') return;
 
+    const canvasRect = canvas.getBoundingClientRect();
+    endX = e.clientX - canvasRect.left;
+    endY = e.clientY - canvasRect.top;
+    
+    context.beginPath();
+    context.moveTo(startX, startY);
+    context.lineTo(endX, endY);
+    context.stroke();
+
+    // Almacenar el trazo actual en el array de formas
+    shapes.push({ tool: 'pen', startX, startY, endX, endY, fillColor, strokeColor, thickness });
+
+    // Actualizar las coordenadas iniciales para el próximo trazo
+    startX = endX;
+    startY = endY;
+}
 
 // Event listeners para empezar, dibujar y dejar de dibujar
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', drawShape);
 canvas.addEventListener('mouseup', stopDrawing);
 canvas.addEventListener('mouseout', stopDrawing);
-
+canvas.addEventListener('mousemove', drawPen);
 // Cargar el canvas guardado al cargar la página
 window.addEventListener('load', loadCanvas);
