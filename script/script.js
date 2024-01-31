@@ -11,8 +11,9 @@ let endY = 0;
 let tool = 'pen'; // Puede ser 'pen', 'line', 'rectangle', 'circle'
 let thickness = 1;
 let shapes = []; // Array para almacenar todas las formas dibujadas
-canvas.width =1200;
-canvas.height =800;
+canvas.width =canvas.offsetWidth;
+canvas.height =canvas.offsetHeight;
+
 // Variables para el dibujo
 let strokeColor = document.querySelector('#strokeColor').value;
 let fillColor = document.querySelector('#fillColor').value;
@@ -138,7 +139,7 @@ function stopDrawing() {
     if (isDrawing) {
         isDrawing = false;
         // Almacenar la nueva forma en el array
-        shapes.push({ tool, startX, startY, endX, endY });
+        shapes.push({ tool, startX, startY, endX, endY, fillColor, strokeColor, thickness });
         drawShapes();
     }
 }
@@ -190,13 +191,17 @@ function loadCanvas() {
 }
 
 // Nueva función para dibujar todas las formas almacenadas
+// Nueva función para dibujar todas las formas almacenadas
 function drawShapes() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     for (const shape of shapes) {
+        context.strokeStyle = shape.strokeColor;
+        context.fillStyle = shape.fillColor;
+        context.lineWidth = shape.thickness;
+
         switch (shape.tool) {
             case 'pen':
-                
             case 'line':
                 context.beginPath();
                 context.moveTo(shape.startX, shape.startY);
@@ -204,11 +209,9 @@ function drawShapes() {
                 context.stroke();
                 break;
             case 'rectangle':
-                context.fillStyle = fillColor;
                 context.fillRect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
                 break;
             case 'circle':
-                context.fillStyle = fillColor;
                 const radius = Math.sqrt(Math.pow(shape.endX - shape.startX, 2) + Math.pow(shape.endY - shape.startY, 2));
                 context.beginPath();
                 context.arc(shape.startX, shape.startY, radius, 0, 2 * Math.PI);
@@ -219,6 +222,7 @@ function drawShapes() {
         }
     }
 }
+
 
 // Event listeners para empezar, dibujar y dejar de dibujar
 canvas.addEventListener('mousedown', startDrawing);
