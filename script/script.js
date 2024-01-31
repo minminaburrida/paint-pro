@@ -205,7 +205,7 @@ function drawShapes() {
             case 'line':
                 context.beginPath();
                 context.moveTo(shape.startX, shape.startY);
-                context.lineTo(shape.endX, shape.endY);
+                context.lineTo(shape.endX, shape.endY);a
                 context.stroke();
                 break;
             case 'rectangle':
