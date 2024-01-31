@@ -11,7 +11,8 @@ let endY = 0;
 let tool = 'pen'; // Puede ser 'pen', 'line', 'rectangle', 'circle'
 let thickness = 1;
 let shapes = []; // Array para almacenar todas las formas dibujadas
-
+canvas.width =1200;
+canvas.height =800;
 // Variables para el dibujo
 let strokeColor = document.querySelector('#strokeColor').value;
 let fillColor = document.querySelector('#fillColor').value;
