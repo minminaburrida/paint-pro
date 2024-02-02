@@ -11,6 +11,8 @@ let endY = 0;
 let tool = 'pen'; // Puede ser 'pen', 'line', 'rectangle', 'circle'
 let thickness = 1;
 let shapes = []; // Array para almacenar todas las formas dibujadas
+let lastShapes = [];
+let formas = 0
 canvas.width =canvas.offsetWidth;
 canvas.height =canvas.offsetHeight;
 
@@ -275,11 +277,36 @@ function drawPen(e) {
     startY = endY;
 }
 
+function undo(){
+    // Funcion para deshacer kgda
+    if (shapes!=[])
+    lastShapes.push(shapes.pop())
+    drawShapes()
+}
+function redo(){
+    // Funcion para rehacer kgda
+    if (lastShapes!=[])
+    shapes.push(lastShapes.pop())
+    drawShapes()
+}
+function doU(e){
+    console.log(e)
+    if (e.ctrlKey){
+        // CTRL
+        if (e.key=='Z' || e.key == 'z')
+            // CTRL Z <shift>
+            // {console.log(e.shiftKey)?
+                if (e.shiftKey) redo();else undo()
+        else if (e.key=='y' || e.key == 'y') redo()
+    }
+}
+
 // Event listeners para empezar, dibujar y dejar de dibujar
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', drawShape);
 canvas.addEventListener('mouseup', stopDrawing);
 canvas.addEventListener('mouseout', stopDrawing);
 canvas.addEventListener('mousemove', drawPen);
+document.addEventListener('keydown', doU);
 // Cargar el canvas guardado al cargar la página
 window.addEventListener('load', loadCanvas);
