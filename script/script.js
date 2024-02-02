@@ -78,12 +78,6 @@ function drawShape(e) {
     for (const shape of shapes) {
         switch (shape.tool) {
             case 'pen':
-
-            //     context.beginPath();
-            //     context.moveTo(shape.startX, shape.startY);
-            //     context.lineTo(shape.endX, shape.endY);
-            //     context.stroke();
-            //     break;
             case 'line':
                 context.beginPath();
                 context.moveTo(shape.startX, shape.startY);
@@ -91,7 +85,24 @@ function drawShape(e) {
                 context.stroke();
                 break;
             case 'rectangle':
-                context.fillRect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
+                if (shape.shiftPressed) {
+                    // Si la tecla Shift estaba presionada, convertir el rectángulo a cuadrado
+                    const width = Math.abs(shape.endX - shape.startX);
+                    const height = Math.abs(shape.endY - shape.startY);
+                    const side = Math.min(width, height);
+
+                    if (shape.endX < shape.startX) {
+                        context.fillStyle = shape.fillColor;
+                        context.fillRect(shape.startX - side, shape.startY, side, side);
+                    } else {
+                        context.fillStyle = shape.fillColor;
+                        context.fillRect(shape.startX, shape.startY, side, side);
+                    }
+                } else {
+                    // Si la tecla Shift no estaba presionada, dibujar el rectángulo normalmente
+                    context.fillStyle = shape.fillColor;
+                    context.fillRect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
+                }
                 break;
             case 'circle':
                 const radius = Math.sqrt(Math.pow(shape.endX - shape.startX, 2) + Math.pow(shape.endY - shape.startY, 2));
@@ -120,8 +131,29 @@ function drawShape(e) {
             context.stroke();
             break;
         case 'rectangle':
-            context.fillStyle = fillColor;
-            context.fillRect(startX, startY, endX - startX, endY - startY);
+            if (!e.shiftKey) {
+                // Solo dibujar el rectángulo si la tecla Shift no está presionada
+                context.fillStyle = fillColor;
+                context.fillRect(startX, startY, endX - startX, endY - startY);
+            } else {
+                // Si la tecla Shift está presionada, actualizar endX y endY y dibujar el rectángulo
+                const width = Math.abs(endX - startX);
+                const height = Math.abs(endY - startY);
+                const side = Math.min(width, height);
+                if (endX < startX) {
+                    endX = startX - side;
+                } else {
+                    endX = startX + side;
+                }
+
+                if (endY < startY) {
+                    endY = startY - side;
+                } else {
+                    endY = startY + side;
+                }
+                context.fillStyle = fillColor;
+                context.fillRect(startX, startY, endX - startX, endY - startY);
+            }
             break;
         case 'circle':
             context.fillStyle = fillColor;
