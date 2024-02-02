@@ -13,8 +13,11 @@ let thickness = 1;
 let shapes = []; // Array para almacenar todas las formas dibujadas
 let lastShapes = [];
 let formas = 0
-canvas.width =canvas.offsetWidth;
-canvas.height =canvas.offsetHeight;
+canvas.parentElement.style.overflow = 'auto';
+canvas.width = canvas.offsetWidth;
+canvas.height = canvas.offsetHeight;
+canvas.style.width = canvas.width + 'px';
+canvas.style.height = canvas.height + 'px';
 
 // Variables para el dibujo
 let strokeColor = document.querySelector('#strokeColor').value;
@@ -263,11 +266,12 @@ function drawPen(e) {
     const canvasRect = canvas.getBoundingClientRect();
     endX = e.clientX - canvasRect.left;
     endY = e.clientY - canvasRect.top;
-    
-    context.beginPath();
-    context.moveTo(startX, startY);
-    context.lineTo(endX, endY);
-    context.stroke();
+    // Refactor porque lloran alv
+    // context.beginPath();
+    // context.moveTo(startX, startY);
+    // context.lineTo(endX, endY);
+    // context.stroke();
+    drawLine(startX, startY, endX, endY)
 
     // Almacenar el trazo actual en el array de formas
     shapes.push({ tool: 'pen', startX, startY, endX, endY, fillColor, strokeColor, thickness });
@@ -277,30 +281,57 @@ function drawPen(e) {
     startY = endY;
 }
 
-function undo(){
+function undo() {
     // Funcion para deshacer kgda
-    if (shapes!=[])
-    lastShapes.push(shapes.pop())
+    if (shapes != [])
+        lastShapes.push(shapes.pop())
     drawShapes()
 }
-function redo(){
+function redo() {
     // Funcion para rehacer kgda
-    if (lastShapes!=[])
-    shapes.push(lastShapes.pop())
+    if (lastShapes != [])
+        shapes.push(lastShapes.pop())
     drawShapes()
 }
-function doU(e){
+function doU(e) {
     console.log(e)
-    if (e.ctrlKey){
+    if (e.ctrlKey) {
         // CTRL
-        if (e.key=='Z' || e.key == 'z')
+        if (e.key == 'Z' || e.key == 'z')
             // CTRL Z <shift>
             // {console.log(e.shiftKey)?
-                if (e.shiftKey) redo();else undo()
-        else if (e.key=='y' || e.key == 'y') redo()
+            if (e.shiftKey) redo(); else undo()
+        else if (e.key == 'y' || e.key == 'y') redo()
     }
 }
+// Funciones que deseo utilizar en todo el codigo de arriba
+function drawPixel(x, y) {
+    context.fillRect(x, y, 1, 1);
+}
+function drawLine(x1, y1, x2, y2) {
+    console.log('funcionando')
+    const dx = Math.abs(x2 - x1);
+    const dy = Math.abs(y2 - y1);
+    const sx = (x1 < x2) ? 1 : -1;
+    const sy = (y1 < y2) ? 1 : -1;
+    let err = dx - dy;
+    context.fillStyle=fillColor;
+    context.strokeStyle=strokeColor;
+    while (true) {
+        drawPixel(x1, y1);
+        if (x1 === x2 && y1 === y2) break
+        const e2 = 2 * err;
+        if (e2 > -dy) {
+            err -= dy;
+            x1 += sx;
+        }
+        if (e2 < dx) {
+            err += dx;
+            y1 += sy;
+        }
+    }
 
+}
 // Event listeners para empezar, dibujar y dejar de dibujar
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', drawShape);
@@ -310,3 +341,6 @@ canvas.addEventListener('mousemove', drawPen);
 document.addEventListener('keydown', doU);
 // Cargar el canvas guardado al cargar la página
 window.addEventListener('load', loadCanvas);
+
+
+

@@ -1,56 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Paint By Evie 🏳️‍⚧️</title>
-    <link rel="stylesheet" href="styles/styles.css">
-</head>
+    <link rel="stylesheet" href="styles/styles.css" />
+  </head>
 
-<body>
+  <body>
     <div class="topbar">
-        <div class="tools">
-            <button onclick="setTool('pen')">✏️</button>
+      <div class="tools">
+        <button onclick="setTool('pen')">✏️</button>
         <button onclick="setTool('line')">➡️</button>
         <button onclick="setTool('rectangle')">🔳</button>
         <button onclick="setTool('circle')">⚪</button>
         <label for="thickness">Grosor:</label>
-        <input type="range" id="thickness" min="1" max="20" value="1" onchange="setThickness(this.value)">
+        <input
+          type="range"
+          id="thickness"
+          min="1"
+          max="20"
+          value="1"
+          onchange="setThickness(this.value)"
+        />
         <button onclick="clearCanvas()">✨</button>
         <button onclick="saveCanvas()">💾</button>
         <button onclick="loadCanvas()">⤵️</button>
-        </div>
-        <div class="tabs">
-            Tabs
-        </div>
+      </div>
+      <div class="tabs">Tabs</div>
     </div>
 
-
     <div class="mid">
-        <div class="content">
-            <canvas id="paintCanvas" class="canvas" style="width: 100%; height: 90vh;">
-            </canvas>
+      <div class="content" style="overflow: auto;padding: 0 30px;">
+        <canvas
+          id="paintCanvas"
+          class="canvas"
+          style="width: 100%; height: 85vh"
+        >
+        </canvas>
 
-            <div class="tools-right">
-                <div class="colors">
-                    <div>
-                        <label for="strokeColor">Borde:</label>
-                    <input type="color" id="strokeColor" onchange="setStrokeColor(this.value)" value="#000000">
-                <br>
-                    <label for="fillColor">Relleno:</label>
-                    <input type="color" id="fillColor" onchange="setFillColor(this.value)" value="#000000">
-                    </div>
-                </div>
-                
-                <div class="layers">
-                    Menú de capas
-                </div>
+        <div class="tools-right">
+          <div class="colors">
+            <div>
+              <label for="strokeColor">Borde:</label>
+              <input
+                type="color"
+                id="strokeColor"
+                onchange="setStrokeColor(this.value)"
+                value="#000000"
+              />
+              <br />
+              <br />
+
+              <label for="fillColor">Relleno:</label>
+              <input
+                type="color"
+                id="fillColor"
+                onchange="setFillColor(this.value)"
+                value="#000000"
+              />
             </div>
+          </div>
+
+          <div class="layers">Menú de capas</div>
         </div>
+      </div>
     </div>
 
     <!-- Moví el script al final del body -->
     <script src="script/script.js"></script>
-</body>
-
+  </body>
 </html>
