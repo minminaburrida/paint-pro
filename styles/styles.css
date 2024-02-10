@@ -27,7 +27,7 @@ body {
     .content {flex-direction: row;}
     .tools-right {
         /* border: 1px solid; */
-        width: 200px;
+        width: 300px;
     }
 }
 @media (max-width: 767px) {
@@ -39,6 +39,9 @@ body {
         height: 300px;
     }
 }
+.tools-right{
+    width: 100%;
+}
 .canvas{
     border: 3px solid #000;
 }
@@ -48,4 +51,9 @@ body {
     height: 50%;
     display: grid;
     place-items: center;
+}
+
+#layerList div{
+    margin-top: 10px;
+    min-width: 200px;
 }
