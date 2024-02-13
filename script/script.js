@@ -146,7 +146,7 @@ function stopDrawing() {
         isDrawing = false;
         // Almacenar la nueva forma en el array
         
-        shapes.push({ tool, startX, startY, endX, endY, fillColor, strokeColor, thickness, idforma });
+        shapes.push({ tool, startX, startY, endX, endY, fillColor, strokeColor, thickness, idforma, sides:tool=='custom'?sides:0});
         idforma += 1;
         drawShapes();
     }
@@ -231,6 +231,10 @@ function drawShapes() {
                 context.beginPath();
                 context.arc(shape.startX, shape.startY, radius, 0, 2 * Math.PI);
                 context.fill();
+                break;
+            case 'custom':
+                drawCustomPolygon();
+                // ano de burro
                 break;
             default:
                 break;
@@ -449,8 +453,35 @@ async function selectLayer(layer) {
         }
     }
 }
+function drawCustomPolygon(_shape) {
+    if (!isDrawing || tool !== 'custom') return;
+    let _startX = _shape.startX, _startY = _shape.startY;
+    let _endX = _shape.endX, _endY = _shape.endY; // Cambiar a _shape.endX y _shape.endY
+    console.log('trazando un poligono de ', sides, ' lados');
+    const canvasRect = canvas.getBoundingClientRect();
+    const centerX = _startX;
+    const centerY = _startY;
+    const radius = Math.min(Math.abs(_endX - _startX), Math.abs(_endY - _startY)); // Usar _endX y _endY en lugar de endX y startY
 
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
+    context.beginPath();
+    context.moveTo(centerX + radius, centerY);
+    for (let i = 1; i <= sides; i++) {
+        const angle = (Math.PI / 2) + (2 * Math.PI * i / sides);
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+        context.lineTo(x, y);
+    }
+    // Corregir el ángulo del último vértice
+    const finalAngle = (Math.PI / 2) + (2 * Math.PI * sides / sides); // Usar 'sides' en lugar de 0
+    const finalX = centerX + radius * Math.cos(finalAngle);
+    const finalY = centerY + radius * Math.sin(finalAngle);
+    context.lineTo(finalX, finalY);
+    
+    context.closePath();
+    context.stroke();
+}
 
 // Llamar a renderLayers() para renderizar las capas al cargar la página
 window.onload = renderLayers;
@@ -462,6 +493,6 @@ let sides = 3;
 function setSides(value) {
     sides = value;
     if (tool === 'custom') {
-        drawCustomPolygon();
+        // drawCustomPolygon();
     }
 }
