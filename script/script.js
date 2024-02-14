@@ -59,7 +59,21 @@ const drawArea = {
     width: canvas.width,
     height: canvas.height
 };
+// canvas.addEventListener('mousemove', simulateMouseMovement);
 
+// Función para simular el movimiento del mouse en el canvas
+function simulateMouseMovement(e) {
+    if (tool === 'mouse') {
+        // Obtener la posición del mouse en relación con el canvas
+        const canvasRect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - canvasRect.left;
+        const mouseY = e.clientY - canvasRect.top;
+        // Simular el dibujo de un punto en la posición del mouse
+        const _color = fillColor
+        fillColor = "#000"
+        drawPixel(mouseX, mouseY);
+        fillColor = _color
+    }}
 // Función para empezar a dibujar
 function startDrawing(e) {
     if (!isValidTool(tool))return;
