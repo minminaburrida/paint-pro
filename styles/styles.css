@@ -1,5 +1,7 @@
 body {
     margin: 0;
+    font-family: Arial, sans-serif;
+
 }
 
 .topbar {
@@ -57,3 +59,39 @@ body {
     margin-top: 10px;
     min-width: 200px;
 }
+
+
+
+  .tabs {
+    cursor: pointer;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: inline-block;
+  }
+
+  .input-container {
+    display: inline-block;
+    position: relative;
+  }
+
+  .input-container input {
+    display: none;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 16px;
+    width: 150px;
+  }
+
+  .input-container.active input {
+    display: inline-block;
+  }
+
+  .input-container.active div {
+    display: none;
+  }
+
+  .text-display {
+    padding: 5px 10px;
+  }

@@ -14,38 +14,31 @@
         <button onclick="setTool('line')">➡️</button>
         <button onclick="setTool('rectangle')">🔳</button>
         <button onclick="setTool('circle')">⚪</button>
-        <button onclick="setTool('custom')">Custom</button>
-        <button onclick="setTool('mouse')">🖱️</button>
-        <label for="sides">Lados:</label>
-        <input
-            type="number"
-            id="sides"
-            min="3"
-            max="360"
-            value="3"
-            onchange="setSides(this.value)"
-        />
         <label for="thickness">Grosor:</label>
         <input
-            type="range"
-            id="thickness"
-            min="1"
-            max="20"
-            value="1"
-            onchange="setThickness(this.value)"
+          type="range"
+          id="thickness"
+          min="1"
+          max="20"
+          value="1"
+          onchange="setThickness(this.value)"
         />
         <button onclick="clearCanvas()">✨</button>
         <button onclick="saveCanvas()">💾</button>
         <button onclick="loadCanvas()">⤵️</button>
         <button id="btnUndo" onclick="undo()">🔙</button>
         <button id="btnRedo" onclick="redo()">➡️</button>
-    </div>
-    
-      <div class="tabs">Tabs</div>
+      </div>
+      <div class="tabs" onclick="convertToInput()">
+        <div id="divInput" class="input-container">
+          <input id="textInput" type="text">
+          <div id="textDisplay">documento</div>
+        </div>
+      </div>
     </div>
 
     <div class="mid">
-      <div class="content" style="overflow: auto;padding: 0;">
+      <div class="content" style="overflow: auto;padding: 0 30px;">
         <canvas
           id="paintCanvas"
           class="canvas"
@@ -76,24 +69,20 @@
             </div>
           </div>
 
-          <div class="layers"><h3>Menú de capas</h3>
-            <div id="layerList">
-                <!-- Aquí se agregarán dinámicamente las capas -->
-            </div>
-            <button onclick="addLayer()">Agregar Capa</button>
-            <button onclick="deleteLayer()">Borrar Capa</button>
-            <button onclick="renameLayer()">Renombrar Capa</button>
-            <select id="layerOrderSelect" onchange="changeLayerOrder()">
-                <option value="front">Traer al Frente</option>
-                <option value="back">Enviar al Fondo</option>
-            </select></div>
+          <div class="layers">
+                <!-- Botón para exportar en PNG -->
+                <button onclick="exportAsPNG()">Exportar como PNG</button>
+                <!-- Botón para exportar en PDF -->
+                <button onclick="exportAsPDF()">Exportar como PDF</button>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Moví el script al final del body -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="script/script.js"></script>
-    <!-- <script type="module" src="script/asd.js"></script> -->
     
   </body>
 </html>

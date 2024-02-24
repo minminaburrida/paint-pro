@@ -1,11 +1,9 @@
-// /modules/my-module.js
-// import {cagada as cpe}  from "./asd";
-// console.log(cpe)
 // Obtenemos el canvas y su contexto
 const canvas = document.getElementById('paintCanvas');
 const context = canvas.getContext('2d');
 
 // Variables para el dibujo
+let fileName = 'documento';
 let isDrawing = false;
 let startX = 0;
 let startY = 0;
@@ -15,7 +13,6 @@ let tool = 'pen'; // Puede ser 'pen', 'line', 'rectangle', 'circle'
 let thickness = 1;
 let shapes = []; // Array para almacenar todas las formas dibujadas
 let lastShapes = [];
-// let layers = [];
 let idforma = 1;
 const btnRedo = document.getElementById('btnRedo');
 const btnUndo = document.getElementById('btnUndo');
@@ -59,24 +56,16 @@ const drawArea = {
     width: canvas.width,
     height: canvas.height
 };
-// canvas.addEventListener('mousemove', simulateMouseMovement);
 
-// Función para simular el movimiento del mouse en el canvas
-function simulateMouseMovement(e) {
-    if (tool === 'mouse') {
-        // Obtener la posición del mouse en relación con el canvas
-        const canvasRect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - canvasRect.left;
-        const mouseY = e.clientY - canvasRect.top;
-        // Simular el dibujo de un punto en la posición del mouse
-        const _color = fillColor
-        fillColor = "#000"
-        drawPixel(mouseX, mouseY);
-        fillColor = _color
-    }}
+
+// Validador de herramientas validas
+const invalidTools = ['mouse'];
+isValidTool = (t) => !invalidTools.includes(t)
+
 // Función para empezar a dibujar
 function startDrawing(e) {
-    if (!isValidTool(tool))return;
+    // Si anda con el mouse, mandela alv mi compa
+    if (!isValidTool(tool)) return;
     isDrawing = true;
 
     // Obtener la posición del canvas en relación con la ventana
@@ -93,36 +82,54 @@ function startDrawing(e) {
 
 // Función para dibujar formas
 function drawShape(e) {
-    if (!isDrawing || !isValidTool(tool)) return;
+    if (!isDrawing) return;
 
     const canvasRect = canvas.getBoundingClientRect();
     endX = e.clientX - canvasRect.left;
     endY = e.clientY - canvasRect.top;
 
     context.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Aquí, coloca la lógica de dibujo basada en la herramienta actual
-    // Asegúrate de considerar la herramienta actual antes de realizar cualquier dibujo
-
+    drawShapes();
     for (const shape of shapes) {
         switch (shape.tool) {
             case 'pen':
             case 'line':
-                drawLine(shape.startX, shape.startY, shape.endX, shape.endY);
+                // context.beginPath();
+                // context.moveTo(shape.startX, shape.startY);
+                // context.lineTo(shape.endX, shape.endY);
+                // context.stroke();
+                drawLine(shape.startX, shape.startY, shape.endX, shape.endY)
                 break;
             case 'rectangle':
-                // Lógica para dibujar rectángulos
+                if (shape.shiftPressed) {
+                    // Si la tecla Shift estaba presionada, convertir el rectángulo a cuadrado
+                    const width = Math.abs(shape.endX - shape.startX);
+                    const height = Math.abs(shape.endY - shape.startY);
+                    const side = Math.min(width, height);
+
+                    if (shape.endX < shape.startX) {
+                        context.fillStyle = shape.fillColor;
+                        context.fillRect(shape.startX - side, shape.startY, side, side);
+                    } else {
+                        context.fillStyle = shape.fillColor;
+                        context.fillRect(shape.startX, shape.startY, side, side);
+                    }
+                } else {
+                    // Si la tecla Shift no estaba presionada, dibujar el rectángulo normalmente
+                    context.fillStyle = shape.fillColor;
+                    context.fillRect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
+                }
                 break;
             case 'circle':
-                // Lógica para dibujar círculos
+                const radius = Math.sqrt(Math.pow(shape.endX - shape.startX, 2) + Math.pow(shape.endY - shape.startY, 2));
+                context.beginPath();
+                context.arc(shape.startX, shape.startY, radius, 0, 2 * Math.PI);
+                context.fill();
                 break;
             default:
                 break;
         }
     }
-
-    // Aquí, coloca la lógica de dibujo basada en la herramienta actual
-    // Asegúrate de considerar la herramienta actual antes de realizar cualquier dibujo
 
     switch (tool) {
         case 'pen':
@@ -140,27 +147,48 @@ function drawShape(e) {
             context.stroke();
             break;
         case 'rectangle':
-            // Lógica para dibujar rectángulos
+            if (!e.shiftKey) {
+                // Solo dibujar el rectángulo si la tecla Shift no está presionada
+                context.fillStyle = fillColor;
+                context.fillRect(startX, startY, endX - startX, endY - startY);
+            } else {
+                // Si la tecla Shift está presionada, actualizar endX y endY y dibujar el rectángulo
+                const width = Math.abs(endX - startX);
+                const height = Math.abs(endY - startY);
+                const side = Math.min(width, height);
+                if (endX < startX) {
+                    endX = startX - side;
+                } else {
+                    endX = startX + side;
+                }
+
+                if (endY < startY) {
+                    endY = startY - side;
+                } else {
+                    endY = startY + side;
+                }
+                context.fillStyle = fillColor;
+                context.fillRect(startX, startY, endX - startX, endY - startY);
+            }
             break;
         case 'circle':
-            // Lógica para dibujar círculos
+            context.fillStyle = fillColor;
+            const radius = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+            context.beginPath();
+            context.arc(startX, startY, radius, 0, 2 * Math.PI);
+            context.fill();
             break;
         default:
             break;
     }
 }
-// Array de Herramientas no validas
-let notValidTools = ['mouse']
-
-isValidTool = (t)=>!notValidTools.includes(t);
 
 // Función para dejar de dibujar
 function stopDrawing() {
-    if (isDrawing && isValidTool(tool)) {
+    if (isDrawing) {
         isDrawing = false;
         // Almacenar la nueva forma en el array
-        
-        shapes.push({ tool, startX, startY, endX, endY, fillColor, strokeColor, thickness, idforma, sides:tool=='custom'?sides:0});
+        shapes.push({ tool, startX, startY, endX, endY, fillColor, strokeColor, thickness, idforma });
         idforma += 1;
         drawShapes();
     }
@@ -231,14 +259,15 @@ function drawShapes() {
         switch (shape.tool) {
             case 'pen':
             case 'line':
-                context.beginPath();
+                context.beginPath(); 
                 // context.moveTo(shape.startX, shape.startY);
                 // context.lineTo(shape.endX, shape.endY);
                 // context.stroke();
-                drawLine(shape.startX, shape.startY, shape.endX, shape.endY)
+                drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness)
                 break;
             case 'rectangle':
-                context.fillRect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
+                drawRectangle(shape.startX, shape.startY, shape.endX, shape.endY)
+                // context.fillRect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
                 break;
             case 'circle':
                 const radius = Math.sqrt(Math.pow(shape.endX - shape.startX, 2) + Math.pow(shape.endY - shape.startY, 2));
@@ -246,35 +275,36 @@ function drawShapes() {
                 context.arc(shape.startX, shape.startY, radius, 0, 2 * Math.PI);
                 context.fill();
                 break;
-            case 'custom':
-                drawCustomPolygon();
-                // ano de burro
-                break;
             default:
                 break;
         }
     }
 }
 function drawPen(e) {
-    // console.log(tool)
-    if (!isDrawing || tool !== 'pen') return;
+    if (!isDrawing || tool != 'pen') return;
 
     const canvasRect = canvas.getBoundingClientRect();
     endX = e.clientX - canvasRect.left;
     endY = e.clientY - canvasRect.top;
+    // Refactor porque lloran alv
+    // context.beginPath();
+    // context.moveTo(startX, startY);
+    // context.lineTo(endX, endY);
+    // context.stroke();
+    drawLine(startX, startY, endX, endY, thickness)
 
-    drawLine(startX, startY, endX, endY);
-
+    // Almacenar el trazo actual en el array de formas
     shapes.push({ tool: 'pen', startX, startY, endX, endY, fillColor, strokeColor, thickness, idforma });
 
+    // Actualizar las coordenadas iniciales para el próximo trazo
     startX = endX;
     startY = endY;
-    // console.log('dibujade')
+    // idforma +=1;
 }
 
 function undo() {
     // Funcion para deshacer kgda
-    console.log(idforma-1);
+    console.log(idforma - 1);
     if (shapes.length)
         while (idforma - 1 == shapes[shapes.length - 1].idforma) {
             lastShapes.push(shapes.pop());
@@ -314,18 +344,24 @@ function doU(e) {
 function drawPixel(x, y) {
     context.fillRect(x, y, 1, 1);
 }
-function drawLine(x1, y1, x2, y2) {
-
+function drawLine(x1, y1, x2, y2, thickness) {
     const dx = Math.abs(x2 - x1);
     const dy = Math.abs(y2 - y1);
     const sx = (x1 < x2) ? 1 : -1;
     const sy = (y1 < y2) ? 1 : -1;
     let err = dx - dy;
+    const step = thickness / 2; // Define el paso para el grosor
     context.fillStyle = fillColor;
     context.strokeStyle = strokeColor;
+
     while (true) {
-        drawPixel(x1, y1);
-        if (x1 === x2 && y1 === y2) break
+        for (let i = -step; i <= step; i++) { // Itera para dibujar el grosor
+            for (let j = -step; j <= step; j++) {
+                drawPixel(x1 + i, y1 + j);
+            }
+        }
+
+        if (x1 === x2 && y1 === y2) break;
         const e2 = 2 * err;
         if (e2 > -dy) {
             err -= dy;
@@ -336,13 +372,8 @@ function drawLine(x1, y1, x2, y2) {
             y1 += sy;
         }
     }
-
 }
 
-
-function newLayer(e){
-
-}
 // Event listeners para empezar, dibujar y dejar de dibujar
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', drawShape);
@@ -353,160 +384,76 @@ document.addEventListener('keydown', doU);
 // Cargar el canvas guardado al cargar la página
 window.addEventListener('load', loadCanvas);
 
-let layers = [
-    { name: 'Capa 1', visible: true, index:1},
-    { name: 'Capa 2', visible: true, index:2},
-];
 
-// Función para agregar una nueva capa
-function addLayer() {
-    const newLayerName = prompt('Ingrese el nombre de la nueva capa:');
-    if (newLayerName) {
-        layers.push({ name: newLayerName, visible: true });
-        renderLayers();
-    }
+
+// Dibujar Formas:
+/*
+X1Y1,     X2Y1
+
+X1Y2,     X2Y2
+*/
+function drawRectangle(x1, x2, y1, y2, t) {
+    drawLine(x1, x2, y1, y1, t);
+    drawLine(x1, x1, y1, y2, t);
+    drawLine(x2, x2, y1, y2, t);
+    drawLine(x1, x2, y2, y2, t);
 }
 
-// Función para eliminar una capa
-async function deleteLayer(layerIndex = false) {
-    console.log("Borrando capa ",layerIndex)
-    if (!layerIndex && layerIndex!=0) layerIndex = prompt('Ingrese el índice de la capa que desea eliminar:');
-    if (layerIndex==0 || layerIndex && layers[layerIndex]) {
-        layers.splice(layerIndex, 1);
-        renderLayers();
-    }
-}
 
-// Función para renombrar una capa
-function renameLayer() {
-    const layerIndex = prompt('Ingrese el índice de la capa que desea renombrar:');
-    if (layerIndex && layers[layerIndex]) {
-        const newName = prompt('Ingrese el nuevo nombre para la capa:');
-        if (newName) {
-            layers[layerIndex].name = newName;
-            renderLayers();
-        }
-    }
-}
 
-// Función para cambiar la visibilidad de una capa
-function toggleLayerVisibility(layerIndex) {
-    
-    layers[layerIndex].visible = !layers[layerIndex].visible;
-    console.log((layers[layerIndex].visible?"mostrando":"ocultando")+' capa '+layerIndex)
-    renderLayers();
-}
 
-// Función para cambiar el orden de las capas
-function changeLayerOrder() {
-    const selectElement = document.getElementById('layerOrderSelect');
-    const selectedOption = selectElement.options[selectElement.selectedIndex].value;
-    if (selectedOption === 'front') {
-        // Lógica para traer la capa al frente
-        // Por ejemplo, podrías cambiar el orden del array `layers` para que la capa seleccionada esté al final
-        // Y luego llamar a renderLayers() para actualizar la visualización
-    } else if (selectedOption === 'back') {
-        // Lógica para enviar la capa al fondo
-        // Por ejemplo, podrías cambiar el orden del array `layers` para que la capa seleccionada esté al principio
-        // Y luego llamar a renderLayers() para actualizar la visualización
-    }
-}
 
-function renderLayers() {
-    const layerList = document.getElementById('layerList');
-    layerList.innerHTML = ''; // Limpiar la lista antes de renderizar las capas nuevamente
-    layers.forEach((layer, index) => {
-        layer.index = index
-        const listItem = document.createElement('div');
-        listItem.textContent = layer.name;
-        listItem.style.border = '1px solid';
-        listItem.style.width = '100%';
-        // Agregar un botón para cambiar la visibilidad de la capa
-        const visibilityButton = document.createElement('button');
-        visibilityButton.textContent = !layer.visible ? '👁️' : '❌';
-        visibilityButton.onclick = () => toggleLayerVisibility(index);
-        listItem.appendChild(visibilityButton);
-
-        // Agregar un botón de borrar con un emoji de un bote de basura
-        const deleteButton = document.createElement('button');
-        deleteButton.innerHTML = '🗑️'; // Emoji de un bote de basura
-        deleteButton.onclick = () => {layer.deleting = true; deleteLayer(index)};
-        listItem.onclick = () => {layer.deleting = false; selectLayer(layer)};
-        listItem.appendChild(deleteButton);
-
-        layerList.appendChild(listItem);
+// Exportar a PDF y JPG
+// Función para exportar el canvas como PNG
+function exportAsPNG() {
+    html2canvas(document.getElementById('paintCanvas')).then(canvas => {
+        let link = document.createElement('a');
+        link.download = 'painting.png';
+        link.href = canvas.toDataURL();
+        link.click();
     });
 }
 
-async function selectLayer(layer) {
-    // Verificar si se está presionando un botón
-    const buttonsPressed = document.querySelectorAll('button:active');
-    if (buttonsPressed.length > 0) {
-        // Si se está presionando un botón, manejar la acción del botón presionado
-        buttonsPressed.forEach(button => {
-            if (button.onclick) {
-                button.onclick();
-            }
-        });
-    } else {
-        // Si no se está presionando un botón, seleccionar la capa
-        if (layer.deleting) return;
-        layerIndex = layers.findIndex(l => l === layer);
-        console.log('seleccionando capa ', layerIndex);
-        // Des-seleccionar todas las capas
-        const layerList = document.getElementById('layerList');
-        const layerItems = layerList.children;
-        for (let i = 0; i < layerItems.length; i++) {
-            if (i === layerIndex) {
-                // Seleccionar la capa clickeada
-                layerItems[i].classList.add('selected');
-            } else {
-                // Des-seleccionar las otras capas
-                layerItems[i].classList.remove('selected');
-            }
-        }
-    }
+// Función para exportar el canvas como PDF
+function exportAsPDF() {
+    const imgData = canvas.toDataURL('image/png', 1.0);
+    const pdf = new jspdf.jsPDF(
+                            // Vertical u horizontal
+                        canvas.width>=canvas.height?'l':'p',
+                            // En pixeles
+                        'px',
+                            // Anchura y altura
+                        [canvas.width, canvas.height]);
+    //Agregar img al coso ese
+    pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+    // Y guardarlo
+    pdf.save(fileName+'.pdf');
 }
-function drawCustomPolygon(_shape) {
-    if (!isDrawing || tool !== 'custom') return;
-    let _startX = _shape.startX, _startY = _shape.startY;
-    let _endX = _shape.endX, _endY = _shape.endY; // Cambiar a _shape.endX y _shape.endY
-    console.log('trazando un poligono de ', sides, ' lados');
-    const canvasRect = canvas.getBoundingClientRect();
-    const centerX = _startX;
-    const centerY = _startY;
-    const radius = Math.min(Math.abs(_endX - _startX), Math.abs(_endY - _startY)); // Usar _endX y _endY en lugar de endX y startY
 
-    context.clearRect(0, 0, canvas.width, canvas.height);
 
-    context.beginPath();
-    context.moveTo(centerX + radius, centerY);
-    for (let i = 1; i <= sides; i++) {
-        const angle = (Math.PI / 2) + (2 * Math.PI * i / sides);
-        const x = centerX + radius * Math.cos(angle);
-        const y = centerY + radius * Math.sin(angle);
-        context.lineTo(x, y);
-    }
-    // Corregir el ángulo del último vértice
-    const finalAngle = (Math.PI / 2) + (2 * Math.PI * sides / sides); // Usar 'sides' en lugar de 0
-    const finalX = centerX + radius * Math.cos(finalAngle);
-    const finalY = centerY + radius * Math.sin(finalAngle);
-    context.lineTo(finalX, finalY);
+function convertToInput() {
+    const divInput = document.getElementById('divInput');
+    const textDisplay = document.getElementById('textDisplay');
+    const textInput = document.getElementById('textInput');
     
-    context.closePath();
-    context.stroke();
-}
+    divInput.classList.add('active');
+    textInput.value = textDisplay.textContent;
+    textInput.focus();
+    textInput.addEventListener('blur', saveText);
+    textInput.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        saveText();
+      }
+    });
+  }
 
-// Llamar a renderLayers() para renderizar las capas al cargar la página
-window.onload = renderLayers;
+  function saveText() {
+    const divInput = document.getElementById('divInput');
+    const textDisplay = document.getElementById('textDisplay');
+    const textInput = document.getElementById('textInput');
 
-// Variable para almacenar el número de lados del polígono personalizado
-let sides = 3;
-
-// Función para establecer el número de lados del polígono personalizado
-function setSides(value) {
-    sides = value;
-    if (tool === 'custom') {
-        // drawCustomPolygon();
-    }
-}
+    textDisplay.textContent = textInput.value;
+    fileName = textInput.value
+    divInput.classList.remove('active');
+    textInput.removeEventListener('blur', saveText);
+  }
