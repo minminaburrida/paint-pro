@@ -146,12 +146,23 @@ function stopDrawing() {
     btnRedo.disabled = !lastShapes.length
     btnUndo.disabled = !shapes.length
 }
-
 // Función para cambiar la herramienta de dibujo
-function setTool(newTool) {
-    tool = newTool;
+const toolButtons = document.querySelectorAll('#toolsLeft button');
+// Función para cambiar la herramienta de dibujo
+function setTool(tag, ntool) {
+    // Iterar sobre cada botón y establecer su estilo
+    toolButtons.forEach(button => {
+        button.style.backgroundColor = '#ffffff'; // Establecer todos los botones a blanco
+        button.style.color = '#000000'; // Establecer el color de texto de todos los botones a negro
+    });
+
+    // Establecer el botón seleccionado a verde
+    tag.style.backgroundColor = '#00ff00'; // Fondo verde
+    tag.style.color = '#000000'; // Texto negro
+    tool = ntool
 }
 
+setTool(toolButtons[0], 'pen')
 // Función para cambiar el grosor de la línea
 function setThickness(newThickness) {
     thickness = newThickness;
@@ -209,7 +220,7 @@ function drawShapes() {
         switch (shape.tool) {
             case 'pen':
             case 'line':
-                drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness); break;
+                drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness, shape.strokeColor); break;
             case 'eraser':
                 drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness, erasing = true); break;
             case 'rectangle':
@@ -233,7 +244,7 @@ function drawPen(e) {
     endY = e.clientY - canvasRect.top;
 
     context.fillStyle = fillColor;
-    drawLine(startX, startY, endX, endY, thickness, erasing = tool == 'eraser');
+    drawLine(startX, startY, endX, endY, thickness, color = canvas.fillStyle, erasing = tool == 'eraser');
 
     // Almacenar el trazo actual en el array de formas
     shapes.push({ tool, startX, startY, endX, endY, fillColor, strokeColor, thickness, idforma });
@@ -286,14 +297,14 @@ function doU(e) {
 function drawPixel(x, y) {
     context.fillRect(x, y, 1, 1);
 }
-function drawLine(x1, y1, x2, y2, thickness, erasing = false) {
+function drawLine(x1, y1, x2, y2, thickness, color = strokeColor, erasing = false,) {
     const dx = Math.abs(x2 - x1);
     const dy = Math.abs(y2 - y1);
     const sx = (x1 < x2) ? 1 : -1;
     const sy = (y1 < y2) ? 1 : -1;
     let err = dx - dy;
     const step = thickness / 2; // Define el paso para el grosor
-    context.fillStyle = erasing ? '#fff' : strokeColor;
+    context.fillStyle = erasing ? '#fff' : color;
 
     while (true) {
         for (let i = -step; i <= step; i++) { // Itera para dibujar el grosor
@@ -343,10 +354,10 @@ function drawRectangle(s) {
         }
     }
     context.fillStyle = stroke
-    drawLine(x1, y1, x2, y1, t);
-    drawLine(x1, y1, x1, y2, t);
-    drawLine(x2, y1, x2, y2, t);
-    drawLine(x1, y2, x2, y2, t);
+    drawLine(x1, y1, x2, y1, t, stroke);
+    drawLine(x1, y1, x1, y2, t, stroke);
+    drawLine(x2, y1, x2, y2, t, stroke);
+    drawLine(x1, y2, x2, y2, t, stroke);
 }
 
 

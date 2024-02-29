@@ -15,21 +15,23 @@
   <body>
     <div class="topbar">
       <div class="tools">
-        <button class="btn btn-primary" onclick="setTool('pen')">
-          <i class="bi bi-pencil-fill"></i>
-        </button>
-        <button class="btn btn-primary" onclick="setTool('line')">
-          <i class="bi bi-arrow-right"></i>
-        </button>
-        <button class="btn btn-primary" onclick="setTool('rectangle')">
-          <i class="bi bi-square"></i>
-        </button>
-        <button class="btn btn-primary" onclick="setTool('circle')">
-          <i class="bi bi-circle"></i>
-        </button>
-        <button class="btn btn-primary" onclick="setTool('eraser')">
-          <i class="bi bi-eraser"></i>
-        </button>
+        <div id="toolsLeft">
+          <button class="btn btn-primary" onclick="setTool(this, 'pen')">
+            <i class="bi bi-pencil-fill"></i>
+          </button>
+          <button class="btn btn-primary" onclick="setTool(this, 'line')">
+            <i class="bi bi-arrow-right"></i>
+          </button>
+          <button class="btn btn-primary" onclick="setTool(this, 'rectangle')">
+            <i class="bi bi-square"></i>
+          </button>
+          <button class="btn btn-primary" onclick="setTool(this, 'circle')">
+            <i class="bi bi-circle"></i>
+          </button>
+          <button class="btn btn-primary" onclick="setTool(this, 'eraser')">
+            <i class="bi bi-eraser"></i>
+          </button>
+        </div>
         <label for="thickness">Grosor:</label>
         <input
           type="range"
