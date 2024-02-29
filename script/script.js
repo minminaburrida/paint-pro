@@ -110,7 +110,8 @@ function drawShape(e) {
             context.fillStyle = strokeColor;
             if (!e.shiftKey) {
                 // Solo dibujar el rectángulo si la tecla Shift no está presionada
-                drawRectangle(startX, startY, endX, endY, thickness);
+                drawRectangle({startX, startY, endX, endY, thickness, strokeColor, fillColor});
+                // drawRectangle(startX, startY, endX, endY, thickness);
             } else {
                 // Si la tecla Shift está presionada, actualizar endX y endY y dibujar el rectángulo
                 const width = Math.abs(endX - startX);
@@ -127,15 +128,15 @@ function drawShape(e) {
                 } else {
                     endY = startY + side;
                 }
-                drawRectangle(startX, startY, endX - startX, endY - startY);
+                //const x1 = s.startX, y1 =  s.startY, x2 =  s.endX, y2 = s.endY, t = s.thickness,
+    //stroke = s.strokeColor, fill = s.fillColor
+                drawRectangle({startX, startY, endX: endX - startX, endY: endY - startY, thickness, strokeColor, fillColor});
             }
             break;
         case 'circle':
-            context.fillStyle = fillColor;
+            // Dibujar círculo
             const radius = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-            context.beginPath();
-            context.arc(startX, startY, radius, 0, 2 * Math.PI);
-            context.fill();
+            drawCircle({ startX, startY, radius, fillColor, thickness, strokeColor });
             break;
         default:
             break;
@@ -207,7 +208,6 @@ function loadCanvas() {
 }
 
 // Nueva función para dibujar todas las formas almacenadas
-// Nueva función para dibujar todas las formas almacenadas
 function drawShapes() {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -219,21 +219,14 @@ function drawShapes() {
         switch (shape.tool) {
             case 'pen':
             case 'line':
-                context.beginPath(); 
-                // context.moveTo(shape.startX, shape.startY);
-                // context.lineTo(shape.endX, shape.endY);
-                // context.stroke();
-                drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness)
-                break;
+                context.beginPath();
+                drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness); break;
             case 'rectangle':
-                drawRectangle(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness);
-                // context.fillRect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
-                break;
+                drawRectangle(shape); break;
             case 'circle':
                 const radius = Math.sqrt(Math.pow(shape.endX - shape.startX, 2) + Math.pow(shape.endY - shape.startY, 2));
-                context.beginPath();
-                context.arc(shape.startX, shape.startY, radius, 0, 2 * Math.PI);
-                context.fill();
+                shape.radius = radius
+                drawCircle(shape)
                 break;
             default:
                 break;
@@ -352,7 +345,16 @@ X1Y1,     X2Y1
 
 X1Y2,     X2Y2
 */
-function drawRectangle(x1, y1, x2, y2, t) {
+function drawRectangle(s) {
+    const x1 = s.startX, y1 =  s.startY, x2 =  s.endX, y2 = s.endY, t = s.thickness,
+    stroke = s.strokeColor, fill = s.fillColor
+    context.fillStyle = fill
+    for (let i = x1 + 1; i < x2; i++) {
+        for (let j = y1 + 1; j < y2; j++) {
+            drawPixel(i, j);
+        }
+    }
+    context.fillStyle = stroke
     drawLine(x1, y1, x2, y1, t);
     drawLine(x1, y1, x1, y2, t);
     drawLine(x2, y1, x2, y2, t);
@@ -360,16 +362,36 @@ function drawRectangle(x1, y1, x2, y2, t) {
 }
 
 
-// En progreso XD
-function drawCircle(x0, y0, radius, fillColor) {
+function drawCircle(s) {
+    const x0 = s.startX;
+    const y0 = s.startY;
+    const radius = s.radius;
+    const fillColor = s.fillColor;
+    const thickness = s.thickness;
+    const strokeColor = s.strokeColor;
+
+    // Llena el círculo con el color de relleno
+    context.fillStyle = fillColor;
     for (let x = x0 - radius; x <= x0 + radius; x++) {
         for (let y = y0 - radius; y <= y0 + radius; y++) {
             if ((x - x0) * (x - x0) + (y - y0) * (y - y0) <= radius * radius) {
-                drawPixel(x, y, fillColor);
+                drawPixel(x, y);
+            }
+        }
+    }
+
+    // Dibuja los bordes del círculo
+    context.fillStyle = strokeColor;
+    for (let x = x0 - radius; x <= x0 + radius; x++) {
+        for (let y = y0 - radius; y <= y0 + radius; y++) {
+            if ((x - x0) * (x - x0) + (y - y0) * (y - y0) <= (radius + thickness / 2) * (radius + thickness / 2) &&
+                (x - x0) * (x - x0) + (y - y0) * (y - y0) >= (radius - thickness / 2) * (radius - thickness / 2)) {
+                drawPixel(x, y);
             }
         }
     }
 }
+
 
 
 
@@ -391,16 +413,16 @@ function exportAsPNG() {
 function exportAsPDF() {
     const imgData = canvas.toDataURL('image/png', 1.0);
     const pdf = new jspdf.jsPDF(
-                            // Vertical u horizontal
-                        canvas.width>=canvas.height?'l':'p',
-                            // En pixeles
-                        'px',
-                            // Anchura y altura
-                        [canvas.width, canvas.height]);
+        // Vertical u horizontal
+        canvas.width >= canvas.height ? 'l' : 'p',
+        // En pixeles
+        'px',
+        // Anchura y altura
+        [canvas.width, canvas.height]);
     //Agregar img al coso ese
     pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
     // Y guardarlo
-    pdf.save(fileName+'.pdf');
+    pdf.save(fileName + '.pdf');
 }
 
 
@@ -408,19 +430,19 @@ function convertToInput() {
     const divInput = document.getElementById('divInput');
     const textDisplay = document.getElementById('textDisplay');
     const textInput = document.getElementById('textInput');
-    
+
     divInput.classList.add('active');
     textInput.value = textDisplay.textContent;
     textInput.focus();
     textInput.addEventListener('blur', saveText);
-    textInput.addEventListener('keypress', function(event) {
-      if (event.key === 'Enter') {
-        saveText();
-      }
+    textInput.addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            saveText();
+        }
     });
-  }
+}
 
-  function saveText() {
+function saveText() {
     const divInput = document.getElementById('divInput');
     const textDisplay = document.getElementById('textDisplay');
     const textInput = document.getElementById('textInput');
@@ -429,4 +451,4 @@ function convertToInput() {
     fileName = textInput.value
     divInput.classList.remove('active');
     textInput.removeEventListener('blur', saveText);
-  }
+}
