@@ -3,7 +3,7 @@ const canvas = document.getElementById('paintCanvas');
 const context = canvas.getContext('2d');
 
 // Variables para el dibujo
-let fileName = 'documento';
+let fileName = document.querySelector('#textDisplay').value;
 let isDrawing = false;
 let startX = 0;
 let startY = 0;
@@ -21,32 +21,25 @@ canvas.width = canvas.offsetWidth;
 canvas.height = canvas.offsetHeight;
 canvas.style.width = canvas.width + 'px';
 canvas.style.height = canvas.height + 'px';
-
 // Variables para el dibujo
-let strokeColor = document.querySelector('#strokeColor').value;
-let fillColor = document.querySelector('#fillColor').value;
-
+let strokeColor = document.querySelector('#strokeColor');
+let fillColor = document.querySelector('#fillColor');
 // Función para cambiar el color del borde
 function setStrokeColor(newColor) {
-    strokeColor = newColor;
+    strokeColor.value = newColor;
     context.strokeStyle = newColor;
 }
 
 // Función para cambiar el color de relleno
 function setFillColor(newColor) {
-    fillColor = newColor;
+    fillColor.value = newColor;
     context.fillStyle = newColor;
 }
 
 // Configurar el ancho de línea
 context.lineWidth = thickness;
-
-// Configurar el color de trazo y de relleno
-context.strokeStyle = '#000'; // Cambia '#000' al color que prefieras
-context.fillStyle = '#000';
-
-// Configurar el fondo blanco
-context.fillStyle = '#fff';
+context.strokeStyle = strokeColor.value;
+context.fillStyle = fillColor.value;
 context.fillRect(0, 0, canvas.width, canvas.height);
 
 // Configurar el área de dibujo
@@ -98,7 +91,7 @@ function drawShape(e) {
                 // context.moveTo(shape.startX, shape.startY);
                 // context.lineTo(shape.endX, shape.endY);
                 // context.stroke();
-                drawLine(shape.startX, shape.startY, shape.endX, shape.endY)
+                drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness, shape.strokeColor, shape.fillColor)
                 break;
             case 'rectangle':
                 if (shape.shiftPressed) {
@@ -133,14 +126,14 @@ function drawShape(e) {
 
     switch (tool) {
         case 'pen':
-            context.strokeStyle = strokeColor;
+            context.strokeStyle = strokeColor.value;
             context.beginPath();
             context.moveTo(startX, startY);
             context.lineTo(endX, endY);
             context.stroke();
             break;
         case 'line':
-            context.strokeStyle = strokeColor;
+            context.strokeStyle = strokeColor.value;
             context.beginPath();
             context.moveTo(startX, startY);
             context.lineTo(endX, endY);
@@ -149,7 +142,7 @@ function drawShape(e) {
         case 'rectangle':
             if (!e.shiftKey) {
                 // Solo dibujar el rectángulo si la tecla Shift no está presionada
-                context.fillStyle = fillColor;
+                context.fillStyle = fillColor.value;
                 context.fillRect(startX, startY, endX - startX, endY - startY);
             } else {
                 // Si la tecla Shift está presionada, actualizar endX y endY y dibujar el rectángulo
@@ -167,12 +160,12 @@ function drawShape(e) {
                 } else {
                     endY = startY + side;
                 }
-                context.fillStyle = fillColor;
+                context.fillStyle = fillColor.value;
                 context.fillRect(startX, startY, endX - startX, endY - startY);
             }
             break;
         case 'circle':
-            context.fillStyle = fillColor;
+            context.fillStyle = fillColor.value;
             const radius = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
             context.beginPath();
             context.arc(startX, startY, radius, 0, 2 * Math.PI);
@@ -188,7 +181,7 @@ function stopDrawing() {
     if (isDrawing) {
         isDrawing = false;
         // Almacenar la nueva forma en el array
-        shapes.push({ tool, startX, startY, endX, endY, fillColor, strokeColor, thickness, idforma });
+        shapes.push({ tool, startX, startY, endX, endY, fillColor: fillColor.value, strokeColor: strokeColor.value, thickness, idforma });
         idforma += 1;
         drawShapes();
     }
@@ -212,7 +205,7 @@ function clearCanvas() {
     context.fillStyle = "#ffffff";
     context.fillRect(0, 0, canvas.width, canvas.height);
     shapes = [];
-    context.fillStyle = fillColor;
+    context.fillStyle = fillColor.value;
 }
 
 // Función para guardar el estado del canvas en el almacenamiento local
@@ -259,14 +252,14 @@ function drawShapes() {
         switch (shape.tool) {
             case 'pen':
             case 'line':
-                context.beginPath(); 
+                context.beginPath();
                 // context.moveTo(shape.startX, shape.startY);
                 // context.lineTo(shape.endX, shape.endY);
                 // context.stroke();
-                drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness)
+                drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness, shape.strokeColor, shape.fillColor)
                 break;
             case 'rectangle':
-                drawRectangle(shape.startX, shape.startY, shape.endX, shape.endY)
+                drawRectangle(shape);
                 // context.fillRect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
                 break;
             case 'circle':
@@ -286,21 +279,20 @@ function drawPen(e) {
     const canvasRect = canvas.getBoundingClientRect();
     endX = e.clientX - canvasRect.left;
     endY = e.clientY - canvasRect.top;
-    // Refactor porque lloran alv
-    // context.beginPath();
-    // context.moveTo(startX, startY);
-    // context.lineTo(endX, endY);
-    // context.stroke();
-    drawLine(startX, startY, endX, endY, thickness)
+
+    context.strokeStyle = strokeColor.value;
+    context.fillStyle = strokeColor.value;
+    // Refactorización del código para dibujar la línea utilizando drawLine()
+    drawLine(startX, startY, endX, endY, thickness, context.strokeStyle, context.strokeStyle);
 
     // Almacenar el trazo actual en el array de formas
-    shapes.push({ tool: 'pen', startX, startY, endX, endY, fillColor, strokeColor, thickness, idforma });
+    shapes.push({ tool: 'pen', startX, startY, endX, endY, fillColor: fillColor.value, strokeColor: strokeColor.value, thickness, idforma });
 
     // Actualizar las coordenadas iniciales para el próximo trazo
     startX = endX;
     startY = endY;
-    // idforma +=1;
 }
+
 
 function undo() {
     // Funcion para deshacer kgda
@@ -344,15 +336,15 @@ function doU(e) {
 function drawPixel(x, y) {
     context.fillRect(x, y, 1, 1);
 }
-function drawLine(x1, y1, x2, y2, thickness) {
+function drawLine(x1, y1, x2, y2, thickness, stroke, fill) {
     const dx = Math.abs(x2 - x1);
     const dy = Math.abs(y2 - y1);
     const sx = (x1 < x2) ? 1 : -1;
     const sy = (y1 < y2) ? 1 : -1;
     let err = dx - dy;
     const step = thickness / 2; // Define el paso para el grosor
-    context.fillStyle = fillColor;
-    context.strokeStyle = strokeColor;
+    context.fillStyle = fill;
+    context.strokeStyle = stroke;
 
     while (true) {
         for (let i = -step; i <= step; i++) { // Itera para dibujar el grosor
@@ -392,12 +384,22 @@ X1Y1,     X2Y1
 
 X1Y2,     X2Y2
 */
-function drawRectangle(x1, x2, y1, y2, t) {
-    drawLine(x1, x2, y1, y1, t);
-    drawLine(x1, x1, y1, y2, t);
-    drawLine(x2, x2, y1, y2, t);
-    drawLine(x1, x2, y2, y2, t);
+function drawRectangle(shape) {
+    const x1 = shape.startX;
+    const x2 = shape.endX;
+    const y1 = shape.startY;
+    const y2 = shape.endY;
+    const thickness = shape.thickness;
+    const stroke = shape.strokeColor;
+    const fill = shape.fillColor;
+    drawLine(x1, y1, x2, y1, thickness, stroke, fill); // Top line
+    drawLine(x1, y1, x1, y2, thickness, stroke, fill); // Left line
+    drawLine(x1, y2, x2, y2, thickness, stroke, fill); // Bottom line
+    drawLine(x2, y1, x2, y2, thickness, stroke, fill); // Right line
 }
+
+
+
 
 
 
@@ -418,16 +420,16 @@ function exportAsPNG() {
 function exportAsPDF() {
     const imgData = canvas.toDataURL('image/png', 1.0);
     const pdf = new jspdf.jsPDF(
-                            // Vertical u horizontal
-                        canvas.width>=canvas.height?'l':'p',
-                            // En pixeles
-                        'px',
-                            // Anchura y altura
-                        [canvas.width, canvas.height]);
+        // Vertical u horizontal
+        canvas.width >= canvas.height ? 'l' : 'p',
+        // En pixeles
+        'px',
+        // Anchura y altura
+        [canvas.width, canvas.height]);
     //Agregar img al coso ese
     pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
     // Y guardarlo
-    pdf.save(fileName+'.pdf');
+    pdf.save(fileName + '.pdf');
 }
 
 
@@ -435,19 +437,19 @@ function convertToInput() {
     const divInput = document.getElementById('divInput');
     const textDisplay = document.getElementById('textDisplay');
     const textInput = document.getElementById('textInput');
-    
+
     divInput.classList.add('active');
     textInput.value = textDisplay.textContent;
     textInput.focus();
     textInput.addEventListener('blur', saveText);
-    textInput.addEventListener('keypress', function(event) {
-      if (event.key === 'Enter') {
-        saveText();
-      }
+    textInput.addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            saveText();
+        }
     });
-  }
+}
 
-  function saveText() {
+function saveText() {
     const divInput = document.getElementById('divInput');
     const textDisplay = document.getElementById('textDisplay');
     const textInput = document.getElementById('textInput');
@@ -456,4 +458,4 @@ function convertToInput() {
     fileName = textInput.value
     divInput.classList.remove('active');
     textInput.removeEventListener('blur', saveText);
-  }
+}
