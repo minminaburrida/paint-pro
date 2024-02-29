@@ -9,7 +9,7 @@ let startX = 0;
 let startY = 0;
 let endX = 0; // Se agregó endX y endY
 let endY = 0;
-let tool = 'pen'; // Puede ser 'pen', 'line', 'rectangle', 'circle'
+let tool = 'pen';
 let thickness = 1;
 let shapes = []; // Array para almacenar todas las formas dibujadas
 let lastShapes = [];
@@ -106,19 +106,13 @@ function drawShape(e) {
                     const width = Math.abs(shape.endX - shape.startX);
                     const height = Math.abs(shape.endY - shape.startY);
                     const side = Math.min(width, height);
-
-                    if (shape.endX < shape.startX) {
-                        context.fillStyle = shape.fillColor;
-                        context.fillRect(shape.startX - side, shape.startY, side, side);
-                    } else {
-                        context.fillStyle = shape.fillColor;
-                        context.fillRect(shape.startX, shape.startY, side, side);
-                    }
-                } else {
-                    // Si la tecla Shift no estaba presionada, dibujar el rectángulo normalmente
+                    
+                    context.strokeStyle = shape.strokeColor;
                     context.fillStyle = shape.fillColor;
-                    context.fillRect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
+                    if (shape.endX < shape.startX) context.fillRect(shape.startX - side, shape.startY, side, side);
+                    else context.fillRect(shape.startX, shape.startY, side, side);
                 }
+                else  drawRectangle(shape);
                 break;
             case 'circle':
                 const radius = Math.sqrt(Math.pow(shape.endX - shape.startX, 2) + Math.pow(shape.endY - shape.startY, 2));
@@ -266,7 +260,7 @@ function drawShapes() {
                 drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness)
                 break;
             case 'rectangle':
-                drawRectangle(shape.startX, shape.startY, shape.endX, shape.endY)
+                drawRectangle(shape)
                 // context.fillRect(shape.startX, shape.startY, shape.endX - shape.startX, shape.endY - shape.startY);
                 break;
             case 'circle':
@@ -392,12 +386,20 @@ X1Y1,     X2Y1
 
 X1Y2,     X2Y2
 */
-function drawRectangle(x1, x2, y1, y2, t) {
-    drawLine(x1, x2, y1, y1, t);
-    drawLine(x1, x1, y1, y2, t);
-    drawLine(x2, x2, y1, y2, t);
-    drawLine(x1, x2, y2, y2, t);
+function drawRectangle(shape) {
+    const x1 = shape.startX;
+    const x2 = shape.endX;
+    const y1 = shape.startY;
+    const y2 = shape.endY;
+    const thickness = shape.thickness;
+    const stroke = shape.strokeColor;
+    const fill = shape.fillColor;
+    drawLine(x1, y1, x2, y1, thickness, stroke, fill); // Top line
+    drawLine(x1, y1, x1, y2, thickness, stroke, fill); // Left line
+    drawLine(x1, y2, x2, y2, thickness, stroke, fill); // Bottom line
+    drawLine(x2, y1, x2, y2, thickness, stroke, fill); // Right line
 }
+
 
 
 
