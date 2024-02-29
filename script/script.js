@@ -93,24 +93,14 @@ function drawShape(e) {
 
     switch (tool) {
         case 'pen':
-            context.strokeStyle = strokeColor;
-            context.beginPath();
-            context.moveTo(startX, startY);
-            context.lineTo(endX, endY);
-            context.stroke();
-            break;
+        case 'eraser':
         case 'line':
-            context.strokeStyle = strokeColor;
-            context.beginPath();
-            context.moveTo(startX, startY);
-            context.lineTo(endX, endY);
-            context.stroke();
-            break;
+            drawLine(startX, startY, endX, endY, thickness); break;
         case 'rectangle':
             context.fillStyle = strokeColor;
             if (!e.shiftKey) {
                 // Solo dibujar el rectángulo si la tecla Shift no está presionada
-                drawRectangle({startX, startY, endX, endY, thickness, strokeColor, fillColor});
+                drawRectangle({ startX, startY, endX, endY, thickness, strokeColor, fillColor });
                 // drawRectangle(startX, startY, endX, endY, thickness);
             } else {
                 // Si la tecla Shift está presionada, actualizar endX y endY y dibujar el rectángulo
@@ -129,8 +119,8 @@ function drawShape(e) {
                     endY = startY + side;
                 }
                 //const x1 = s.startX, y1 =  s.startY, x2 =  s.endX, y2 = s.endY, t = s.thickness,
-    //stroke = s.strokeColor, fill = s.fillColor
-                drawRectangle({startX, startY, endX: endX - startX, endY: endY - startY, thickness, strokeColor, fillColor});
+                //stroke = s.strokeColor, fill = s.fillColor
+                drawRectangle({ startX, startY, endX: endX - startX, endY: endY - startY, thickness, strokeColor, fillColor });
             }
             break;
         case 'circle':
@@ -219,8 +209,9 @@ function drawShapes() {
         switch (shape.tool) {
             case 'pen':
             case 'line':
-                context.beginPath();
                 drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness); break;
+            case 'eraser':
+                drawLine(shape.startX, shape.startY, shape.endX, shape.endY, shape.thickness, erasing = true); break;
             case 'rectangle':
                 drawRectangle(shape); break;
             case 'circle':
@@ -233,27 +224,25 @@ function drawShapes() {
         }
     }
 }
+
 function drawPen(e) {
-    if (!isDrawing || tool != 'pen') return;
+    if (!isDrawing || (tool !== 'pen' && tool !== 'eraser')) return;
 
     const canvasRect = canvas.getBoundingClientRect();
     endX = e.clientX - canvasRect.left;
     endY = e.clientY - canvasRect.top;
-    // Refactor porque lloran alv
-    // context.beginPath();
-    // context.moveTo(startX, startY);
-    // context.lineTo(endX, endY);
-    // context.stroke();
-    drawLine(startX, startY, endX, endY, thickness)
+
+    context.fillStyle = fillColor;
+    drawLine(startX, startY, endX, endY, thickness, erasing = tool == 'eraser');
 
     // Almacenar el trazo actual en el array de formas
-    shapes.push({ tool: 'pen', startX, startY, endX, endY, fillColor, strokeColor, thickness, idforma });
+    shapes.push({ tool, startX, startY, endX, endY, fillColor, strokeColor, thickness, idforma });
 
     // Actualizar las coordenadas iniciales para el próximo trazo
     startX = endX;
     startY = endY;
-    // idforma +=1;
 }
+
 
 function undo() {
     // Funcion para deshacer kgda
@@ -297,15 +286,14 @@ function doU(e) {
 function drawPixel(x, y) {
     context.fillRect(x, y, 1, 1);
 }
-function drawLine(x1, y1, x2, y2, thickness) {
+function drawLine(x1, y1, x2, y2, thickness, erasing = false) {
     const dx = Math.abs(x2 - x1);
     const dy = Math.abs(y2 - y1);
     const sx = (x1 < x2) ? 1 : -1;
     const sy = (y1 < y2) ? 1 : -1;
     let err = dx - dy;
     const step = thickness / 2; // Define el paso para el grosor
-    context.fillStyle = strokeColor;
-    context.strokeStyle = strokeColor;
+    context.fillStyle = erasing ? '#fff' : strokeColor;
 
     while (true) {
         for (let i = -step; i <= step; i++) { // Itera para dibujar el grosor
@@ -346,8 +334,8 @@ X1Y1,     X2Y1
 X1Y2,     X2Y2
 */
 function drawRectangle(s) {
-    const x1 = s.startX, y1 =  s.startY, x2 =  s.endX, y2 = s.endY, t = s.thickness,
-    stroke = s.strokeColor, fill = s.fillColor
+    const x1 = s.startX, y1 = s.startY, x2 = s.endX, y2 = s.endY, t = s.thickness,
+        stroke = s.strokeColor, fill = s.fillColor
     context.fillStyle = fill
     for (let i = x1 + 1; i < x2; i++) {
         for (let j = y1 + 1; j < y2; j++) {
@@ -451,4 +439,8 @@ function saveText() {
     fileName = textInput.value
     divInput.classList.remove('active');
     textInput.removeEventListener('blur', saveText);
+}
+
+function erase() {
+
 }
