@@ -27,6 +27,9 @@
         <button class="btn btn-primary" onclick="setTool('circle')">
           <i class="bi bi-circle"></i>
         </button>
+        <button class="btn btn-primary" onclick="clearCanvas()">
+          <i class="bi bi-eraser"></i>
+        </button>
         <label for="thickness">Grosor:</label>
         <input
           type="range"
@@ -38,7 +41,7 @@
           onchange="setThickness(this.value)"
         />
         <button class="btn btn-primary" onclick="clearCanvas()">
-          <i class="bi bi-eraser"></i>
+          <i class="bi bi-eraser-fill"></i>
         </button>
         <button class="btn btn-primary" onclick="saveCanvas()">
           <i class="bi bi-save"></i>
@@ -76,7 +79,7 @@
                 class="form-control"
                 id="strokeColor"
                 onchange="setStrokeColor(this.value)"
-                value="black"
+                value="#000000"
               />
               <br />
               <br />
