@@ -149,6 +149,7 @@ function stopDrawing(e) {
         idforma += 1;
         drawShapes();
     }
+
 }
 // Función para cambiar la herramienta de dibujo
 const toolButtons = document.querySelectorAll('#toolsLeft button');
@@ -188,29 +189,35 @@ function saveCanvas() {
     localStorage.setItem('shapesData', JSON.stringify(shapes));
 }
 
-// Función para cargar el estado del canvas desde el almacenamiento local
 function loadCanvas() {
     const savedCanvasData = localStorage.getItem('canvasData');
     const savedShapesData = localStorage.getItem('shapesData');
-    if (savedCanvasData && savedShapesData && confirm('Desea cargar el ultimo estado?')) {
-        const image = new Image();
-        image.onload = function () {
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(image, 0, 0);
-        };
-        image.src = savedCanvasData;
 
-        shapes = JSON.parse(savedShapesData);
-        btnRedo.disabled = true;
-        btnUndo.disabled = true
-        drawShapes();
+    if (!savedCanvasData || !savedShapesData) {
+        localStorage.removeItem('shapesData');
+        localStorage.removeItem('canvasData');
+        return;
     }
-    else {
+
+    const image = new Image();
+    image.onload = function () {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(image, 0, 0);
+    };
+    image.src = savedCanvasData;
+
+    shapes = JSON.parse(savedShapesData);
+    if (shapes.length && confirm('Desea cargar el ultimo estado?')) {
+        idforma = shapes[shapes.length - 1].idforma + 1;
+        btnRedo.disabled = true;
+        btnUndo.disabled = false;
+        drawShapes();
+    } else {
         localStorage.removeItem('shapesData');
         localStorage.removeItem('canvasData');
     }
-
 }
+
 
 // Nueva función para dibujar todas las formas almacenadas
 function drawShapes() {
@@ -262,9 +269,8 @@ function drawPen(e) {
 
 function undo() {
     // Funcion para deshacer kgda
-    console.log(idforma - 1);
-    if (shapes.length > 1) {
-        while (idforma-1 == shapes[shapes.length - 1].idforma) {
+    if (shapes.length) {
+        while (idforma - 1 == shapes[shapes.length - 1].idforma) {
             lastShapes.push(shapes.pop());
             console.log(idforma - 1);
             if (!shapes.length) break;
@@ -278,11 +284,13 @@ function undo() {
 
 function redo() {
     // Funcion para rehacer kgda
-    if (lastShapes.length){while (lastShapes.length > 0 && idforma === lastShapes[lastShapes.length - 1].idforma) {
-        shapes.push(lastShapes.pop());
-        console.log(shapes.length);
+    if (lastShapes.length) {
+        while (lastShapes.length > 0 && idforma === lastShapes[lastShapes.length - 1].idforma) {
+            shapes.push(lastShapes.pop());
+            console.log(shapes.length);
+        }
+        idforma += 1;
     }
-    idforma += 1;}
     btnRedo.disabled = !shapes.length;
     drawShapes();
 }
