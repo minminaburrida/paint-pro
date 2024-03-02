@@ -135,16 +135,20 @@ function drawShape(e) {
 
 
 // Función para dejar de dibujar
-function stopDrawing() {
+function stopDrawing(e) {
     if (isDrawing) {
+
         isDrawing = false;
+        const mouseX = e.clientX - canvas.left;
+        const mouseY = e.clientY - canvas.top;
+        // Verificar si ha habido un cambio significativo en las coordenadas del mouse
+        if (mouseX === startX && mouseY === startY) return;
         // Almacenar la nueva forma en el array
         shapes.push({ tool, startX, startY, endX, endY, fillColor, strokeColor, thickness, idforma });
+        lastShapes = []
         idforma += 1;
         drawShapes();
     }
-    btnRedo.disabled = !lastShapes.length
-    btnUndo.disabled = !shapes.length
 }
 // Función para cambiar la herramienta de dibujo
 const toolButtons = document.querySelectorAll('#toolsLeft button');
@@ -242,6 +246,7 @@ function drawPen(e) {
     const canvasRect = canvas.getBoundingClientRect();
     endX = e.clientX - canvasRect.left;
     endY = e.clientY - canvasRect.top;
+    if (endX === startX && endY === startY) return;
 
     context.fillStyle = fillColor;
     drawLine(startX, startY, endX, endY, thickness, color = canvas.fillStyle, erasing = tool == 'eraser');
@@ -258,13 +263,14 @@ function drawPen(e) {
 function undo() {
     // Funcion para deshacer kgda
     console.log(idforma - 1);
-    if (shapes.length)
-        while (idforma - 1 == shapes[shapes.length - 1].idforma) {
+    if (shapes.length > 1) {
+        while (idforma-1 == shapes[shapes.length - 1].idforma) {
             lastShapes.push(shapes.pop());
-            console.log(shapes.length)
+            console.log(idforma - 1);
             if (!shapes.length) break;
         }
-    idforma -= 1
+        idforma -= 1
+    }
     // console.log('undoing')
     btnUndo.disabled = !lastShapes.length
     drawShapes();
@@ -272,11 +278,11 @@ function undo() {
 
 function redo() {
     // Funcion para rehacer kgda
-    while (lastShapes.length > 0 && idforma === lastShapes[lastShapes.length - 1].idforma) {
+    if (lastShapes.length){while (lastShapes.length > 0 && idforma === lastShapes[lastShapes.length - 1].idforma) {
         shapes.push(lastShapes.pop());
         console.log(shapes.length);
     }
-    idforma += 1;
+    idforma += 1;}
     btnRedo.disabled = !shapes.length;
     drawShapes();
 }
