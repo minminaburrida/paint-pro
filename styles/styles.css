@@ -1,25 +1,3 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-
-}
-
-.topbar {
-    height: 10vh;
-    /* background: red; */
-    display: flex;
-    flex-direction: column;
-}
-
-.mid {
-    display: flex;
-    flex-direction: column;
-    /* height: 90vh;/ */
-}
-.tabs {
-    height: 30px;
-    background: #f88;
-}
 
 .content {
     display: flex;
@@ -48,6 +26,43 @@ body {
     border: 3px solid #000;
 }
 
+/* Estilos para la disposición de los elementos */
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Distribuir los elementos horizontalmente */
+}
+
+/* Estilos para los botones en dispositivos móviles */
+@media (max-width: 767px) {
+  .tools {
+    flex-direction: column; /* Apilar los botones verticalmente */
+
+  }
+
+  .tools > * {
+    margin-bottom: 10px; /* Espacio entre los botones */
+  }
+}
+@media (min-width: 768px) {
+  .tools {
+    flex-direction: row; /* Apilar los botones verticalmente */
+
+  }
+
+  .tools > * {
+    margin-bottom: 10px; /* Espacio entre los botones */
+  }
+}
+.btn{
+  width: 50px;
+  height: 30px;
+}
+/* Estilos para el botón de exportar PDF */
+#btnExportPDF {
+  padding: 15px 30px; /* Ajustar el padding */
+  margin-right: 0; /* Eliminar el margen derecho */
+}
 
 .colors , .layers{
     height: 50%;
@@ -95,3 +110,4 @@ body {
   .text-display {
     padding: 5px 10px;
   }
+

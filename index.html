@@ -13,7 +13,7 @@
   </head>
 
   <body>
-    <div class="topbar">
+     <div class="topbar">
       <div class="tools">
         <div id="toolsLeft">
           <button class="btn btn-primary" onclick="setTool(this, 'pen')">
@@ -32,29 +32,31 @@
             <i class="bi bi-eraser"></i>
           </button>
         </div>
-        <label for="thickness">Grosor:</label>
-        <input
-          type="range"
-          class="form-range"
-          id="thickness"
-          min="1"
-          max="20"
-          value="1"
-          onchange="setThickness(this.value)"
-        />
-        <button class="btn btn-primary" onclick="clearCanvas()">
-          <i class="bi bi-eraser-fill"></i>
-        </button>
-        <button class="btn btn-primary" onclick="saveCanvas()">
-          <i class="bi bi-save"></i>
-        </button>
-        <button class="btn btn-primary" onclick="loadCanvas()">⤵️</button>
-        <button id="btnUndo" class="btn btn-primary" onclick="undo()">
-          <i class="bi bi-arrow-counterclockwise"></i>
-        </button>
-        <button id="btnRedo" class="btn btn-primary" onclick="redo()">
-          <i class="bi bi-arrow-clockwise"></i>
-        </button>
+        <div class="tools-right">
+          <label for="thickness">Grosor:</label>
+          <input
+            type="range"
+            class="form-range"
+            id="thickness"
+            min="1"
+            max="20"
+            value="1"
+            onchange="setThickness(this.value)"
+          />
+          <button class="btn btn-primary" onclick="clearCanvas()">
+            <i class="bi bi-eraser-fill"></i>
+          </button>
+          <button class="btn btn-primary" onclick="saveCanvas()">
+            <i class="bi bi-save"></i>
+          </button>
+          <button class="btn btn-primary" onclick="loadCanvas()">⤵️</button>
+          <button id="btnUndo" class="btn btn-primary" onclick="undo()">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </button>
+          <button id="btnRedo" class="btn btn-primary" onclick="redo()">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
       </div>
       <div class="tabs" onclick="convertToInput()">
         <div id="divInput" class="input-container">
@@ -63,7 +65,7 @@
         </div>
       </div>
     </div>
-
+<br>
     <div class="mid">
       <div class="content" style="overflow: auto; padding: 0 30px">
         <canvas
@@ -98,13 +100,12 @@
           </div>
 
           <div class="layers">
-            <!-- Botón para exportar en PNG -->
-            <button class="btn btn-primary" onclick="exportAsPNG()">
-              <i class="bi bi-file-image"></i>
-            </button>
-            <!-- Botón para exportar en PDF -->
-            <button class="btn btn-primary" onclick="exportAsPDF()">
-              <i class="bi bi-file-pdf"></i>
+            <button
+              id="btnExportPDF"
+              class="btn btn-primary btn-lg"
+              onclick="exportAsPDF()"
+            >
+              <i class="bi bi-file-pdf"></i> Exportar PDF
             </button>
           </div>
         </div>
