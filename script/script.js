@@ -199,20 +199,20 @@ function loadCanvas() {
         return;
     }
 
-    const image = new Image();
-    image.onload = function () {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.drawImage(image, 0, 0);
-    };
-    image.src = savedCanvasData;
-
     shapes = JSON.parse(savedShapesData);
     if (shapes.length && confirm('Desea cargar el ultimo estado?')) {
         idforma = shapes[shapes.length - 1].idforma + 1;
         btnRedo.disabled = true;
         btnUndo.disabled = false;
+        const image = new Image();
+        image.onload = function () {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(image, 0, 0);
+        };
+        image.src = savedCanvasData;
         drawShapes();
     } else {
+        shapes = []
         localStorage.removeItem('shapesData');
         localStorage.removeItem('canvasData');
     }

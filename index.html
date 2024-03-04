@@ -13,26 +13,46 @@
   </head>
 
   <body>
-     <div class="topbar">
+    <div class="topbar">
       <div class="tools">
         <div id="toolsLeft">
-          <button class="btn btn-primary" onclick="setTool(this, 'pen')">
+          <button
+            class="btn btn-primary"
+            onclick="setTool(this, 'pen')"
+            title="Pluma"
+          >
             <i class="bi bi-pencil-fill"></i>
           </button>
-          <button class="btn btn-primary" onclick="setTool(this, 'line')">
+          <button
+            class="btn btn-primary"
+            onclick="setTool(this, 'line')"
+            title="Línea"
+          >
             <i class="bi bi-arrow-right"></i>
           </button>
-          <button class="btn btn-primary" onclick="setTool(this, 'rectangle')">
+          <button
+            class="btn btn-primary"
+            onclick="setTool(this, 'rectangle')"
+            title="Rectángulo"
+          >
             <i class="bi bi-square"></i>
           </button>
-          <button class="btn btn-primary" onclick="setTool(this, 'circle')">
+          <button
+            class="btn btn-primary"
+            onclick="setTool(this, 'circle')"
+            title="Círculo"
+          >
             <i class="bi bi-circle"></i>
           </button>
-          <button class="btn btn-primary" onclick="setTool(this, 'eraser')">
+          <button
+            class="btn btn-primary"
+            onclick="setTool(this, 'eraser')"
+            title="Borrador"
+          >
             <i class="bi bi-eraser"></i>
           </button>
         </div>
-        <div class="tools-right">
+        <div id="tools-center">
           <label for="thickness">Grosor:</label>
           <input
             type="range"
@@ -42,22 +62,58 @@
             max="20"
             value="1"
             onchange="setThickness(this.value)"
+            title="Selecciona el grosor de la herramienta"
           />
-          <button class="btn btn-primary" onclick="clearCanvas()">
+        </div>
+        <div id="tools-right">
+          <button
+            class="btn btn-primary"
+            onclick="clearCanvas()"
+            title="Borrar lienzo"
+          >
             <i class="bi bi-eraser-fill"></i>
           </button>
-          <button class="btn btn-primary" onclick="saveCanvas()">
+          <button
+            class="btn btn-primary"
+            onclick="saveCanvas()"
+            title="Guardar lienzo"
+          >
             <i class="bi bi-save"></i>
           </button>
-          <button class="btn btn-primary" onclick="loadCanvas()">⤵️</button>
-          <button id="btnUndo" class="btn btn-primary" onclick="undo()">
+          <button
+            class="btn btn-primary"
+            onclick="loadCanvas()"
+            title="Cargar lienzo"
+          >
+            ⤵️
+          </button>
+          <button
+            id="btnUndo"
+            class="btn btn-primary"
+            onclick="undo()"
+            title="Deshacer"
+          >
             <i class="bi bi-arrow-counterclockwise"></i>
           </button>
-          <button id="btnRedo" class="btn btn-primary" onclick="redo()">
+          <button
+            id="btnRedo"
+            class="btn btn-primary"
+            onclick="redo()"
+            title="Rehacer"
+          >
             <i class="bi bi-arrow-clockwise"></i>
+          </button>
+          <button
+            id="btnExportPDF"
+            class="btn btn-primary"
+            onclick="exportAsPDF()"
+            title="Exportar como PDF"
+          >
+            <i class="bi bi-file-pdf"></i>
           </button>
         </div>
       </div>
+
       <div class="tabs" onclick="convertToInput()">
         <div id="divInput" class="input-container">
           <input id="textInput" type="text" />
@@ -65,13 +121,13 @@
         </div>
       </div>
     </div>
-<br>
+    <br />
     <div class="mid">
       <div class="content" style="overflow: auto; padding: 0 30px">
         <canvas
           id="paintCanvas"
           class="canvas"
-          style="width: 100%; height: 85vh"
+          style="width: 100%; height: 80vh"
         ></canvas>
 
         <div class="tools-right">
@@ -99,15 +155,7 @@
             </div>
           </div>
 
-          <div class="layers">
-            <button
-              id="btnExportPDF"
-              class="btn btn-primary btn-lg"
-              onclick="exportAsPDF()"
-            >
-              <i class="bi bi-file-pdf"></i> Exportar PDF
-            </button>
-          </div>
+          <div class="layers"></div>
         </div>
       </div>
     </div>

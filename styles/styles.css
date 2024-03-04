@@ -1,113 +1,145 @@
-
 .content {
-    display: flex;
-    /* height: calc(90vh - 60px); */
+  display: flex;
+  /* height: calc(90vh - 60px); */
 }
+
 @media (min-width: 768px) {
-    .content {flex-direction: row;}
-    .tools-right {
-        /* border: 1px solid; */
-        width: 300px;
-    }
+  .content {
+    flex-direction: row;
+  }
+
 }
+
+body {
+  font-family: Arial, sans-serif;
+  
+  margin: 0;
+  padding: 30px;
+}
+*{font-weight: bolder;}
+
 @media (max-width: 767px) {
-    .content {flex-direction: column;}
-    .tools-right {
-        /* border: 1px solid; */
-        padding-top: 30px;
-        margin: auto;
-        height: 300px;
-    }
+  .content {
+    flex-direction: column;
+  }
+
+
+  #tools-right button{
+    /* border: 1px solid; */
+    margin: 10px 0;
+  }
+  .tools{
+    align-items: center;
+  }
+
 }
-.tools-right{
-    width: 100%;
+
+.tools-right {
+  width: 100%;
 }
-.canvas{
-    border: 3px solid #000;
+
+.canvas {
+  border: 2px solid #000;
 }
 
 /* Estilos para la disposición de los elementos */
 .tools {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between; /* Distribuir los elementos horizontalmente */
+  justify-content: space-between;
+  /* Distribuir los elementos horizontalmente */
 }
 
 /* Estilos para los botones en dispositivos móviles */
 @media (max-width: 767px) {
   .tools {
-    flex-direction: column; /* Apilar los botones verticalmente */
+    flex-direction: column;
+    /* Apilar los botones verticalmente */
 
   }
 
-  .tools > * {
-    margin-bottom: 10px; /* Espacio entre los botones */
+  .tools>* {
+    margin-bottom: 10px;
+    /* Espacio entre los botones */
   }
 }
+
 @media (min-width: 768px) {
   .tools {
-    flex-direction: row; /* Apilar los botones verticalmente */
+    flex-direction: row;
+    /* Apilar los botones verticalmente */
 
   }
 
-  .tools > * {
-    margin-bottom: 10px; /* Espacio entre los botones */
+  .tools>* {
+    margin-bottom: 10px;
+    /* Espacio entre los botones */
   }
 }
-.btn{
+
+.btn {
   width: 50px;
-  height: 30px;
-}
-/* Estilos para el botón de exportar PDF */
-#btnExportPDF {
-  padding: 15px 30px; /* Ajustar el padding */
-  margin-right: 0; /* Eliminar el margen derecho */
-}
-
-.colors , .layers{
-    height: 50%;
-    display: grid;
-    place-items: center;
-}
-
-#layerList div{
-    margin-top: 10px;
-    min-width: 200px;
+  height: 40px;
 }
 
 
+.colors,
+.layers {
+  height: 50%;
+  display: grid;
+  place-items: center;
+}
 
-  .tabs {
-    cursor: pointer;
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    display: inline-block;
-  }
+#layerList div {
+  margin-top: 10px;
+  min-width: 200px;
+}
 
-  .input-container {
-    display: inline-block;
-    position: relative;
-  }
 
-  .input-container input {
-    display: none;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 5px 10px;
-    font-size: 16px;
-    width: 150px;
-  }
+button:hover {
+  background-color: #0056b3;
+}
 
-  .input-container.active input {
-    display: inline-block;
-  }
+button {
+  background-color: #007bff;
+  color: #fff;
+  /* border: ; */
+  border-radius: 5px;
+  padding: 8px 15px;
+  margin-right: 10px;
+  cursor: pointer;
+}
 
-  .input-container.active div {
-    display: none;
-  }
+.tabs {
+  cursor: pointer;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: inline-block;
+}
 
-  .text-display {
-    padding: 5px 10px;
-  }
+.input-container {
+  display: inline-block;
+  position: relative;
+}
 
+.input-container input {
+  display: none;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 10px;
+  /* font-size: 16px; */
+  width: 150px;
+}
+
+.input-container.active input {
+  display: inline-block;
+}
+
+.input-container.active div {
+  display: none;
+}
+
+.text-display {
+  padding: 5px 10px;
+}
