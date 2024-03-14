@@ -10,7 +10,7 @@ let startY = 0;
 let endX = 0; // Se agregó endX y endY
 let endY = 0;
 let tool = 'pen'; // Puede ser 'pen', 'line', 'rectangle', 'circle'
-let thickness = document.getElementById('thickness').value;
+let thickness = parseInt(document.getElementById('thickness').value);
 let shapes = []; // Array para almacenar todas las formas dibujadas
 let lastShapes = [];
 let idforma = 1;
@@ -169,8 +169,8 @@ function setTool(tag, ntool) {
 
 setTool(toolButtons[0], 'pen')
 // Función para cambiar el grosor de la línea
-function setThickness(newThickness) {
-    thickness = newThickness;
+function setThickness(nt) {
+    thickness = parseInt(nt)
     context.lineWidth = thickness;
 }
 
@@ -245,6 +245,16 @@ function drawShapes() {
                 break;
         }
     }
+
+    // 
+
+    if (JSON.stringify(selectedShape) == '{}') return;
+    const _shape = selectedShape.shape
+    drawLine(_shape.x1 - 5, _shape.y1 - 5, _shape.x2 + 5, _shape.y1 + 5, 2, '000');
+    drawLine(_shape.x1 - 5, _shape.y1 - 5, _shape.x1 + 5, _shape.y2 + 5, 2, '000');
+    drawLine(_shape.x2 - 5, _shape.y1 - 5, _shape.x2 + 5, _shape.y2 + 5, 2, '000');
+    drawLine(_shape.x1 - 5, _shape.y2 - 5, _shape.x2 + 5, _shape.y2 + 5, 2, '000');
+
 }
 
 function drawPen(e) {
@@ -377,8 +387,10 @@ function drawRectangle(s) {
 
 function drawCircle(s) {
     const x0 = s.startX;
+    const x1 = s.endX;
     const y0 = s.startY;
-    const radius = s.radius;
+    const y1 = s.endY;
+    const radius = Math.sqrt(Math.pow(x1 - x0, 2) + Math.pow(y1 - y0, 2));
     const fillColor = s.fillColor;
     const thickness = s.thickness;
     const strokeColor = s.strokeColor;
@@ -469,3 +481,82 @@ function saveText() {
 function erase() {
 
 }
+// Función para manejar el clic en el canvas
+function canvasClickHandler(e) {
+    if (tool !== 'cursor') return;
+    // Obtener las coordenadas del clic en relación con el canvas
+    const canvasRect = canvas.getBoundingClientRect();
+    const clickX = e.clientX - canvasRect.left;
+    const clickY = e.clientY - canvasRect.top;
+    let clickedShape = null;
+    console.log('Coordenadas del clic: x=' + clickX + ', y=' + clickY);
+    // Iterar sobre todas las formas dibujadas
+    for (const shape of shapes) {
+        // Verificar si las coordenadas de clic están dentro de la forma
+        switch (shape.tool) {
+            case 'pen':
+                if (clickX >= shape.startX - shape.thickness / 2 && clickX <= shape.startX + shape.thickness / 2 &&
+                    clickY >= shape.startY - shape.thickness / 2 && clickY <= shape.startY + shape.thickness / 2) {
+                    console.log('¡Se hizo clic en el trazo del pincel!');
+                    clickedShape = shape;
+                }
+                break;
+            case 'line':
+                // Calcular la distancia desde el punto de clic hasta la línea
+                const distance = distanceToLine(clickX, clickY, shape.startX, shape.startY, shape.endX, shape.endY);
+                // Si la distancia es menor o igual al grosor de la línea, significa que se hizo clic en la línea
+                if (distance <= shape.thickness) {
+                    console.log('¡Se hizo clic en la línea!');
+                    clickedShape = shape;
+                }
+                break;
+            case 'rectangle':
+                // Verificar si las coordenadas de clic están dentro del rectángulo
+                if (clickX >= shape.startX && clickX <= shape.endX && clickY >= shape.startY && clickY <= shape.endY) {
+                    console.log('¡Se hizo clic en el rectángulo!');
+                    clickedShape = shape
+                    // Dibujar el cuadrado alrededor de la forma seleccionada
+
+
+                    return
+                }
+                break;
+            case 'circle':
+                // Calcular la distancia desde el punto de clic hasta el centro del círculo
+                const distanceToCenter = Math.sqrt(Math.pow(clickX - shape.startX, 2) + Math.pow(clickY - shape.startY, 2));
+                // Si la distancia al centro es menor o igual al radio del círculo, significa que se hizo clic en el círculo
+                if (distanceToCenter <= shape.radius) {
+                    console.log('¡Se hizo clic en el círculo!');
+                    clickedShape = shape;
+                }
+                break;
+            default:
+                break;
+        }
+        // Si se encontró una forma en la que se hizo clic, salir del bucle
+        if (clickedShape) break;
+    }
+    // Realizar acciones adicionales según la forma en la que se hizo clic, si es necesario
+    if (clickedShape) {
+        console.log(clickedShape)
+        // Realizar acciones adicionales aquí, como resaltar la forma o realizar operaciones específicas.
+        // Por ahora, solo se ha almacenado la forma en la variable clickedShape.
+        // Si necesitas realizar alguna acción adicional, puedes hacerlo aquí.
+    }
+}
+function filterIdForma(id) {
+    const s = []
+    for (const shape of shapes) if (shape.idforma === id) s.push(shape);
+    return s
+}
+let selectedShape = {}
+// Función para calcular la distancia desde un punto hasta una línea
+function distanceToLine(x, y, x1, y1, x2, y2) {
+    const numerator = Math.abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1);
+    const denominator = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+    console.log(numerator, ' / ', denominator, ' = ', (numerator / denominator))
+    return numerator / denominator;
+}
+
+// Agregar el evento de clic al canvas
+canvas.addEventListener('mousedown', canvasClickHandler);
